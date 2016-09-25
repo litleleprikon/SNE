@@ -1,0 +1,6 @@
+<!ELEMENT animals (animal*)>
+<!ELEMENT animal (skin, noise?, eyes)>
+<!ATTLIST animal name CDATA #REQUIRED>
+<!ELEMENT skin (#PCDATA) >
+<!ELEMENT noise (#PCDATA) >
+<!ELEMENT eyes (#PCDATA) >

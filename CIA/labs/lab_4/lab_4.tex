@@ -1,0 +1,521 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{minted}
+\usepackage{xcolor}
+\usepackage{soul}
+\usepackage{listings}
+
+\geometry{total={210mm,297mm},
+left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+
+\renewcommand*\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+
+\newcommand*{\TitleFont}{%
+      \usefont{\encodingdefault}{\rmdefault}{b}{n}%
+      \fontsize{16}{20}%
+      \selectfont}
+
+\linespread{1.3}
+
+% my own titles
+\makeatletter   
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace{2ex}
+{\huge \textsc{\@title}}
+\vspace{1ex}
+\\
+\rule{\linewidth}{0.5pt}\\
+\@author \hfill \@date
+\vspace{4ex}
+\end{center}
+}
+\makeatother
+
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
+\lstset{
+    basicstyle=\footnotesize\ttfamily,
+    extendedchars=true,
+    numbersep=5mm,
+    % basicstyle=\ttfamily\small,
+    breaklines=true,
+    tabsize=4,
+    frame=single,
+    numbers=left,
+    captionpos=t,
+    framesep=3mm,
+    escapeinside={\%*}{*)}
+}
+
+\newminted{python}{
+    linenos,
+    fontsize=\footnotesize\ttfamily,
+    frame=single,
+    } 
+
+% custom footers and headers
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{Assignment 4 : DNS(2) }
+\cfoot{}
+\rfoot{Page \thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+%%----------%%%----------%%%----------%%%----------%%%
+
+\renewcommand{\thesubsubsection}{\thesubsection.\alph{subsubsection}}
+
+\newmintedfile{html}{
+    linenos,
+    breaklines,
+    python3,
+    numbersep=8pt,
+    frame=single,
+    framesep=3mm} 
+
+\begin{document}
+
+
+% \newminted{all}{linenos, frame=single}
+
+% \usemintedstyle{monokai}
+\usemintedstyle{manni}
+% \usemintedstyle{xcode}
+% \usemintedstyle{vs}
+% \usemintedstyle{autumn}
+% \usemintedstyle{colorful}
+% \usemintedstyle{trac}
+
+
+\title{ \TitleFont Assignment 4 : DNS(2) }
+
+\author{Emil Sharifulllin, Innopolis University}
+
+\date{\today}
+
+\maketitle
+
+\section{Reverse Zone Files}
+
+
+\subsection{Why is that useful?}
+Sometimes this is required for diagnostic purposes, more frequently these days it is used for security purposes to trace a hacker or spammer. \hl{For example many of e-mail servers in Internet are configured to reject incoming e-mails from any IP address that not have reverse DNS. The original use of the rDNS: network troubleshooting via tools such as traceroute, ping.}
+
+\subsection{Reverse zone configuration}
+
+\subsubsection{Set up your own reverse zone for your IPv4 subnet. Please use subnet from
+10.192.X.0/24 where X your table number.}
+
+To enable reverse zone we need to change two files:
+
+\begin{lstlisting}[caption=/etc/named.conf]
+...
+
+zone "10.192.10.in-addr.arpa" {
+    type master;
+    file "10.192.10.rev";
+    notify no;
+};
+\end{lstlisting}
+
+\begin{lstlisting}[caption=10.192.10.rev]
+$TTL 86400
+@ IN SOA st10.os3.su. admin.st10.os3.su. (
+2016082900       ; serial
+360000  ; refresh every 100 hours
+3600    ; retry after 1 hour
+3600000 ; expire after 1000 hours
+3600    ; negative cache is 1 hour
+)
+
+        IN      NS      ns.st10.os3.su.
+0       IN      PTR     st10.os3.su.
+
+\end{lstlisting}
+
+\subsubsection{Show that a reverse lookup works.}
+
+To check reverse zone I run following command:
+
+\begin{lstlisting}
+dig -x 10.192.10.0      
+
+; <<>> DiG 9.10.4-P2 <<>> -x 10.192.10.0
+;; global options: +cmd
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 19187
+;; flags: qr aa rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 1, ADDITIONAL: 2
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;0.10.192.10.in-addr.arpa.  IN  PTR
+
+;; ANSWER SECTION:
+0.10.192.10.in-addr.arpa. 86400 IN  PTR st10.os3.su.
+
+;; AUTHORITY SECTION:
+10.192.10.in-addr.arpa. 86400   IN  NS  ns.st10.os3.su.
+
+;; ADDITIONAL SECTION:
+ns.st10.os3.su.     86400   IN  A   188.130.155.43
+
+;; Query time: 0 msec
+;; SERVER: 127.0.1.1#53(127.0.1.1)
+;; WHEN: Mon Sep 12 16:07:16 MSK 2016
+;; MSG SIZE  rcvd: 111
+
+\end{lstlisting}
+
+\section{Delegating Your Own Zone}
+\addtocounter{subsection}{3}
+\subsection{}
+\subsubsection{How did you setup the subdomains in your zone file?}
+Initially I have zone st10.os3.su. working with student \#11 I need to delegate zone st11.st10.os3.su. to him and I need to support zone st10.st11.os3.su.
+
+To allow delegation I need to change st10.os3.su.zone file and add new NS record to it:
+
+\begin{lstlisting}
+$TTL 86400
+@ IN SOA ns10.os3.su. admin.st10.os3.su. (
+2016082900      ; serial
+360000  ; refresh every 100 hours
+3600    ; retry after 1 hour
+3600000 ; expire after 1000 hours
+3600    ; negative cache is 1 hour
+)
+
+
+@               IN      NS              ns10.os3.su.
+@               IN      A               188.130.155.43
+@               IN      MX      10      mail
+st11            IN      NS              ns11.os3.su.
+ns              IN      A               188.130.155.43
+www             IN      A               188.130.155.43
+mail            IN      A               188.130.155.43
+web             IN      CNAME   www
+mob             IN      CNAME   www
+ns1             IN      CNAME   ns
+ns2             IN      CNAME   ns
+\end{lstlisting}
+
+After that if my pair student setup zone st11.st10.os3.su. this zone will be resolved.
+
+\subsubsection{What named.conf options did you add or change?}
+
+To support delegation of zone st10.st11.os3.su. I need to add to files named.conf and st10.st11.os3.su.zone following lines:
+
+\begin{lstlisting}[caption=named.conf]
+zone "st10.st11.os3.su." {
+        type master;
+        file "st10.st11.os3.su.zone";
+        allow-transfer { 188.130.155.44; };
+
+};
+\end{lstlisting}
+
+\begin{lstlisting}
+ IN SOA ns10.os3.su. admin.st10.st11.os3.su. (
+;2016082900     ; serial
+2016091200
+360000  ; refresh every 100 hours
+3600    ; retry after 1 hour
+3600000 ; expire after 1000 hours
+3600    ; negative cache is 1 hour
+)
+
+
+@               IN      NS              ns10.os3.su.
+@               IN      A               188.130.155.43
+www             IN      CNAME           @
+new             IN      A               188.130.155.43
+\end{lstlisting}
+
+\subsubsection{Show the results of the tests that you performed.}
+
+\begin{lstlisting}[caption="Checking zone st11.st10.os3.su"]
+$ dig st11.st10.os3.su +trace @8.8.8.8
+
+; <<>> DiG 9.10.4-P2 <<>> st11.st10.os3.su +trace @8.8.8.8
+;; global options: +cmd
+.           7330    IN  NS  j.root-servers.net.
+.           7330    IN  NS  b.root-servers.net.
+.           7330    IN  NS  d.root-servers.net.
+.           7330    IN  NS  a.root-servers.net.
+.           7330    IN  NS  f.root-servers.net.
+.           7330    IN  NS  l.root-servers.net.
+.           7330    IN  NS  m.root-servers.net.
+.           7330    IN  NS  c.root-servers.net.
+.           7330    IN  NS  e.root-servers.net.
+.           7330    IN  NS  g.root-servers.net.
+.           7330    IN  NS  h.root-servers.net.
+.           7330    IN  NS  k.root-servers.net.
+.           7330    IN  NS  i.root-servers.net.
+.           7330    IN  RRSIG   NS 8 0 518400 20161002050000 20160919040000 46551 . X7qv1M68ydJjh3gXzdrXAkY9YB8mCLeDkvi8wJSLjtOvHtJJuwiD9/GH GVTU2LOLUYoHfLc+11evhaLxf3gYOlECWRKPmK42OGgdW546GKfzF/uN D/FcLl6ip/HooQcvj5MVES/m4eB87UASIyCKWFuXz097bb6tqVkKKcdu D3M=
+;; Received 397 bytes from 8.8.8.8#53(8.8.8.8) in 21 ms
+
+su.         172800  IN  NS  e.dns.ripn.net.
+su.         172800  IN  NS  d.dns.ripn.net.
+su.         172800  IN  NS  f.dns.ripn.net.
+su.         172800  IN  NS  b.dns.ripn.net.
+su.         172800  IN  NS  a.dns.ripn.net.
+su.         86400   IN  DS  22111 8 2 3363C13346E0C9C511526EDFFC756C3701FB35A7EFAD5775BB6C13D6 FC2BBA01
+su.         86400   IN  RRSIG   DS 8 1 86400 20161002050000 20160919040000 46551 . Rck2sDYnDHpW+2OD8l+63YU3gI+FS/u1UrFjxaGq4/xt4Rujf3tIh2Op ZuQSp+fyrhDYsZ545FKkmZBFyumjdo53v0qRyaSo0ecMe8XExfI4Oqha 52ZjiBjCObID81qYBL5Kf4sKa0SXhVhZeRHV23UutPH13Y+RynCqlkJG lzY=
+;; Received 564 bytes from 192.112.36.4#53(g.root-servers.net) in 74 ms
+
+OS3.SU.         345600  IN  NS  ns2.masterhost.ru.
+OS3.SU.         345600  IN  NS  ns.masterhost.ru.
+OS3.SU.         345600  IN  NS  ns1.masterhost.ru.
+DOVG5BL88TU14V0TNIJJGO18H7JH7C1E.SU. 3600 IN NSEC3 1 1 3 00FF E4CHA6HEO3F4IRI6S4V9HDASKGABKP28  NS SOA RRSIG DNSKEY NSEC3PARAM
+DOVG5BL88TU14V0TNIJJGO18H7JH7C1E.SU. 3600 IN RRSIG NSEC3 8 2 3600 20161009075420 20160829085649 24459 su. REbEdkeEWwzzc8ecOA+aW1fs6o80dW3NIEquQ7SgA4s45+LRi296Kxrc DA8YKjJ0EhVeHaV0NbDFvVTBAnRPzFKmasOeVqhVPOMnnIw6lK5dKas1 G/mi3AphsmkFkRZVfIkl/D58SkYp7JqKqxEf07+M29NdfCtOBEr6bZ6h 0E4=
+7D5ULGN7M6DVECAC1GAFR3FAST3VE2LQ.SU. 3600 IN NSEC3 1 1 3 00FF 8JMNFT53J2UADTLQBNPVDR70KBUTAI91  NS DS RRSIG
+7D5ULGN7M6DVECAC1GAFR3FAST3VE2LQ.SU. 3600 IN RRSIG NSEC3 8 2 3600 20161011153428 20160902135650 24459 su. fVie0EpvZWY84KOpoeJVO10ykVrhLUYqUCW76EuQCOm2ouwoWAAhR7I6 xw1rDTstrTsGAltNUMLe73kzkYSVGc+Qn2HtnigCZNydUVxyWjDfWY9w PS3HSdQPcKL4MJtcZ2Jn3cZIeZ6GDp6jO6FgZLQZ6rfszia0p72bS0TA eI0=
+;; Received 604 bytes from 193.232.142.17#53(e.dns.ripn.net) in 59 ms
+
+st10.os3.su.        900 IN  NS  st11.os3.su.
+st10.os3.su.        900 IN  NS  st10.os3.su.
+;; Received 110 bytes from 217.16.22.15#53(ns2.masterhost.ru) in 21 ms
+
+st11.st10.os3.su.   1800    IN  A   188.130.155.44
+st11.st10.os3.su.   1800    IN  NS  ns11.os3.su.
+;; Received 80 bytes from 188.130.155.43#53(st10.os3.su) in 0 ms
+\end{lstlisting}
+
+\begin{lstlisting}[caption="Checking zone st10.st11.os3.su"]
+$ dig st10.st11.os3.su +trace @8.8.8.8
+
+; <<>> DiG 9.10.4-P2 <<>> st10.st11.os3.su +trace @8.8.8.8
+;; global options: +cmd
+.           7269    IN  NS  j.root-servers.net.
+.           7269    IN  NS  b.root-servers.net.
+.           7269    IN  NS  d.root-servers.net.
+.           7269    IN  NS  a.root-servers.net.
+.           7269    IN  NS  f.root-servers.net.
+.           7269    IN  NS  l.root-servers.net.
+.           7269    IN  NS  m.root-servers.net.
+.           7269    IN  NS  c.root-servers.net.
+.           7269    IN  NS  e.root-servers.net.
+.           7269    IN  NS  g.root-servers.net.
+.           7269    IN  NS  h.root-servers.net.
+.           7269    IN  NS  k.root-servers.net.
+.           7269    IN  NS  i.root-servers.net.
+.           7269    IN  RRSIG   NS 8 0 518400 20161002050000 20160919040000 46551 . X7qv1M68ydJjh3gXzdrXAkY9YB8mCLeDkvi8wJSLjtOvHtJJuwiD9/GH GVTU2LOLUYoHfLc+11evhaLxf3gYOlECWRKPmK42OGgdW546GKfzF/uN D/FcLl6ip/HooQcvj5MVES/m4eB87UASIyCKWFuXz097bb6tqVkKKcdu D3M=
+;; Received 397 bytes from 8.8.8.8#53(8.8.8.8) in 20 ms
+
+su.         172800  IN  NS  a.dns.ripn.net.
+su.         172800  IN  NS  e.dns.ripn.net.
+su.         172800  IN  NS  b.dns.ripn.net.
+su.         172800  IN  NS  f.dns.ripn.net.
+su.         172800  IN  NS  d.dns.ripn.net.
+su.         86400   IN  DS  22111 8 2 3363C13346E0C9C511526EDFFC756C3701FB35A7EFAD5775BB6C13D6 FC2BBA01
+su.         86400   IN  RRSIG   DS 8 1 86400 20161002050000 20160919040000 46551 . Rck2sDYnDHpW+2OD8l+63YU3gI+FS/u1UrFjxaGq4/xt4Rujf3tIh2Op ZuQSp+fyrhDYsZ545FKkmZBFyumjdo53v0qRyaSo0ecMe8XExfI4Oqha 52ZjiBjCObID81qYBL5Kf4sKa0SXhVhZeRHV23UutPH13Y+RynCqlkJG lzY=
+;; Received 564 bytes from 192.33.4.12#53(c.root-servers.net) in 66 ms
+
+OS3.SU.         345600  IN  NS  ns1.masterhost.ru.
+OS3.SU.         345600  IN  NS  ns.masterhost.ru.
+OS3.SU.         345600  IN  NS  ns2.masterhost.ru.
+DOVG5BL88TU14V0TNIJJGO18H7JH7C1E.SU. 3600 IN NSEC3 1 1 3 00FF E4CHA6HEO3F4IRI6S4V9HDASKGABKP28  NS SOA RRSIG DNSKEY NSEC3PARAM
+DOVG5BL88TU14V0TNIJJGO18H7JH7C1E.SU. 3600 IN RRSIG NSEC3 8 2 3600 20161009075420 20160829085649 24459 su. REbEdkeEWwzzc8ecOA+aW1fs6o80dW3NIEquQ7SgA4s45+LRi296Kxrc DA8YKjJ0EhVeHaV0NbDFvVTBAnRPzFKmasOeVqhVPOMnnIw6lK5dKas1 G/mi3AphsmkFkRZVfIkl/D58SkYp7JqKqxEf07+M29NdfCtOBEr6bZ6h 0E4=
+7D5ULGN7M6DVECAC1GAFR3FAST3VE2LQ.SU. 3600 IN NSEC3 1 1 3 00FF 8JMNFT53J2UADTLQBNPVDR70KBUTAI91  NS DS RRSIG
+7D5ULGN7M6DVECAC1GAFR3FAST3VE2LQ.SU. 3600 IN RRSIG NSEC3 8 2 3600 20161011153428 20160902135650 24459 su. fVie0EpvZWY84KOpoeJVO10ykVrhLUYqUCW76EuQCOm2ouwoWAAhR7I6 xw1rDTstrTsGAltNUMLe73kzkYSVGc+Qn2HtnigCZNydUVxyWjDfWY9w PS3HSdQPcKL4MJtcZ2Jn3cZIeZ6GDp6jO6FgZLQZ6rfszia0p72bS0TA eI0=
+;; Received 604 bytes from 193.232.128.6#53(a.dns.ripn.net) in 17 ms
+
+st11.os3.su.        900 IN  NS  st10.os3.su.
+st11.os3.su.        900 IN  NS  st11.os3.su.
+;; Received 110 bytes from 217.16.22.30#53(ns2.masterhost.ru) in 16 ms
+
+st10.st11.os3.su.   3600    IN  A   188.130.155.43
+st10.st11.os3.su.   3600    IN  NS  ns10.os3.su.
+;; Received 80 bytes from 188.130.155.43#53(st10.os3.su) in 0 ms
+
+\end{lstlisting}
+
+\section{Setting Up A Slave Server}
+\addtocounter{subsection}{5}
+% \subsection{}
+Slave server is a nameserver that is devided from primary nameserver and can be used in cases when primary nameserver not reponds. Secondary nameserver contains exactly the same information about domain zone as a a primary nameserver.
+
+\subsubsection{How did you set up the slave nameserver?}
+To setup slave nameserver you must add zone section to your named.conf file and define this zone section as slave.
+\subsubsection{Show the changes to the configuration files that you made.}
+To implement master-slave replication of nameservers I changed following lines:
+\begin{lstlisting}[caption=named.conf]
+zone "st10.st11.os3.su." {
+        type master;
+        file "st10.st11.os3.su.zone";
+        allow-transfer { 188.130.155.44; };
+};
+
+zone "st11.st10.os3.su." {
+        type slave;
+        file "st11.st10.os3.su.zone";
+        masters { 188.130.155.44; };
+};
+\end{lstlisting}
+\hl{In master record I added allow transfer to allow secondary nameserver of my zone get information about it. The main idea to not allow anyone other to transfer my zone but secondary nameserver.} After restarting bind will copy zone file from primary nameserver.
+
+\subsection{What happens if the primary nameserver for the subdomain fails?}
+Recursor tries to call master server and if it fall recursor calls secondary nameserver. \hl{Secondary nameserver will serve requests before expire time will come.}
+
+
+\subsection{Considering that the slave nameserver is also the delegating nameserver, explain why this is essentially a bad setup?}
+
+\hl{If master server will fall load for secondary nameserver will increase and it can also be down. After this delegated zone will fall. Fall of one server promotes fail of other.}
+
+\section{Zone Transfer}
+\addtocounter{subsection}{7}
+\subsection{}
+
+\begin{lstlisting}
+$ dig axfr st10.os3.su @127.0.0.1
+
+; <<>> DiG 9.10.4-P2 <<>> axfr st10.os3.su @127.0.0.1
+;; global options: +cmd
+st10.os3.su.        86400   IN  SOA ns10.os3.su. admin.st10.os3.su. 2016082900 360000 3600 3600000 3600
+st10.os3.su.        86400   IN  NS  ns10.os3.su.
+st10.os3.su.        86400   IN  A   188.130.155.43
+st10.os3.su.        86400   IN  MX  10 mail.st10.os3.su.
+bot.st10.os3.su.    86400   IN  CNAME   st10.os3.su.
+mail.st10.os3.su.   86400   IN  A   188.130.155.43
+mob.st10.os3.su.    86400   IN  CNAME   www.st10.os3.su.
+ns.st10.os3.su.     86400   IN  A   188.130.155.43
+ns1.st10.os3.su.    86400   IN  CNAME   ns.st10.os3.su.
+ns2.st10.os3.su.    86400   IN  CNAME   ns.st10.os3.su.
+st11.st10.os3.su.   86400   IN  NS  ns11.os3.su.
+web.st10.os3.su.    86400   IN  CNAME   www.st10.os3.su.
+www.st10.os3.su.    86400   IN  A   188.130.155.43
+st10.os3.su.        86400   IN  SOA ns10.os3.su. admin.st10.os3.su. 2016082900 360000 3600 3600000 3600
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1)
+;; WHEN: Mon Sep 19 20:23:35 MSK 2016
+;; XFR size: 14 records (messages 1, bytes 343)
+\end{lstlisting}
+
+\begin{lstlisting}
+$ dig axfr st11.st10.os3.su @188.130.155.44
+
+; <<>> DiG 9.10.4-P2 <<>> axfr st11.st10.os3.su @188.130.155.44
+;; global options: +cmd
+st11.st10.os3.su.   1800    IN  SOA ns11.os3.su. admin.st11.os3.su. 2016091201 3600 900 1209600 1800
+st11.st10.os3.su.   1800    IN  NS  ns11.os3.su.
+st11.st10.os3.su.   1800    IN  A   188.130.155.44
+new.st11.st10.os3.su.   1800    IN  A   188.130.155.44
+www.st11.st10.os3.su.   1800    IN  A   188.130.155.44
+st11.st10.os3.su.   1800    IN  SOA ns11.os3.su. admin.st11.os3.su. 2016091201 3600 900 1209600 1800
+;; Query time: 0 msec
+;; SERVER: 188.130.155.44#53(188.130.155.44)
+;; WHEN: Mon Sep 19 20:25:00 MSK 2016
+;; XFR size: 6 records (messages 1, bytes 203)
+\end{lstlisting}  
+
+\subsection{Describe the steps in the transfer process.}
+\begin{enumerate}
+    \item The secondary server for the zone waits a certain amount of time (specified in the Refresh field of the SOA resource record), and then polls the master server for its SOA.
+    \item The master server for the zone responds with the SOA resource record.
+    \item The secondary server for the zone compares the returned serial number to its own serial number. If the serial number sent by the master server for the zone is higher than its own serial number, that means its zone database is out of date, and it sends an AXFR request (a request for a full zone transfer).
+    \item The master server for the zone sends the full zone database to the secondary server.
+\end{enumerate}
+
+\subsection{What information did the slave server receive?}
+Secondary nameserver will receive full inormation about zone because we use full zone transfer
+
+\begin{lstlisting}
+st10.os3.su.        86400   IN  SOA ns10.os3.su. admin.st10.os3.su. 2016082900 360000 3600 3600000 3600
+st10.os3.su.        86400   IN  NS  ns10.os3.su.
+st10.os3.su.        86400   IN  A   188.130.155.43
+st10.os3.su.        86400   IN  MX  10 mail.st10.os3.su.
+bot.st10.os3.su.    86400   IN  CNAME   st10.os3.su.
+mail.st10.os3.su.   86400   IN  A   188.130.155.43
+mob.st10.os3.su.    86400   IN  CNAME   www.st10.os3.su.
+ns.st10.os3.su.     86400   IN  A   188.130.155.43
+ns1.st10.os3.su.    86400   IN  CNAME   ns.st10.os3.su.
+ns2.st10.os3.su.    86400   IN  CNAME   ns.st10.os3.su.
+st11.st10.os3.su.   86400   IN  NS  ns11.os3.su.
+web.st10.os3.su.    86400   IN  CNAME   www.st10.os3.su.
+www.st10.os3.su.    86400   IN  A   188.130.155.43
+st10.os3.su.        86400   IN  SOA ns10.os3.su. admin.st10.os3.su. 2016082900 360000 3600 3600000 3600
+\end{lstlisting}
+
+\subsection{Show the changes you had to make to your configuration.}
+To configure zone transfer I addeded my companions IP address to parameter \textbf{allow-transfer} at my zone section in named.conf.
+
+\hl{It is not necessary to add notify option to config file because it setted on by default. \\}
+\hl{notify If yes (the default), DNS NOTIFY messages are sent when a zone the }\hl{server is authorita- tive for changes, see Section 4.1. The messages are sent to }  the servers listed in the zone’s NS records (except the master server identified in the SOA MNAME field), and to any servers listed in the also-notify option.
+
+\begin{lstlisting}
+allow-transfer { 188.130.155.44; };
+\end{lstlisting}
+
+\subsection{Show how to make BIND/NSD run in a chroot environment.}
+
+\begin{lstlisting}
+mkdir -p /chroot/named
+mkdir: cannot create directory '/chroot': Permission denied
+$  ~  sudo mkdir -p /chroot/named
+$  ~  sudo cd /chroot/named
+sudo: cd: command not found
+$  ~  cd /chroot/named
+$  named  sudo mkdir -p dev etc/bind/slave var/run
+$  named  cp -p /etc/named.conf /chroot/named/etc/
+cp: cannot create regular file '/chroot/named/etc/named.conf': Permission denied
+$  named  sudo !!
+$  named  sudo cp -p /etc/named.conf /chroot/named/etc/
+$  named  sudo cp -a /var/named/* /chroot/named/etc/bind/
+zsh: no matches found: /var/named/*
+$  named  sudo cp -a /etc/bind/* /chroot/named/etc/bind/
+$  named  sudo chown -R named:named /chroot/named/etc/bind/slave
+$  named  sudo chown named:named /chroot/named/var/run
+$  named  sudo mknod /chroot/named/dev/null c 1 3
+$  named  sudo mknod /chroot/named/dev/random c 1 8
+$  named  sudo chmod 666 /chroot/named/dev/{null,random}
+$  named  cp /etc/localtime /chroot/named/etc/
+cp: cannot create regular file '/chroot/named/etc/localtime': Permission denied
+$  named  sudo cp /etc/localtime /chroot/named/etc/
+$  named  chown root /chroot
+chown: changing ownership of '/chroot': Operation not permitted
+$  named  sudo chown root /chroot
+$  named  sudo chmod 700 /chroot
+$  named  sudo chown named:named /chroot/named
+$  named  sudo chmod 700 /chroot/named
+$  sudo mkdir -p /chroot/named/usr/lib/x86_64-linux-gnu/openssl-1.0.0/engines/
+$  sudo cp /usr/lib/x86_64-linux-gnu/openssl-1.0.0/engines/libgost.so /chroot/named/usr/lib/x86_64-linux-gnu/openssl-1.0.0/engines/libgost.so
+$  sudo ls -l /proc/$(pgrep named)/root
+lrwxrwxrwx 1 named named 0 Sep 21 17:02 /proc/15615/root -> /chroot/named
+\end{lstlisting}
+
+\subsection{What do all those parameters in the SOA record do, and what use could fiddling with them have?}
+
+SOA record of st10.os3.su is
+
+\begin{lstlisting}
+$TTL 86400
+@ IN SOA st10.os3.su. admin.st10.os3.su. (
+2016082900; serial
+360000  ; refresh every 100 hours
+3600    ; retry after 1 hour
+3600000 ; expire after 1000 hours
+3600    ; negative cache is 1 hour
+)
+\end{lstlisting}
+
+\begin{enumerate}
+    \item \textbf{\$TTL 86400} not a required field defines Time To Live
+    \item \textbf{@ IN SOA st10.os3.su. admin.st10.os3.su.} state of authority record means that this server is authoritative for st10.os3.su. zone and admin@st10.os3.su. is administrator e-mail.
+    \item \textbf{2016082900} serial number - is needed to determine that sone file has been changed.
+    \item \textbf{360000} refresh - means how often secondary server should ask primary server if serial number is changed.
+    \item \textbf{3600} retry - means how long secondary server should wait to send another request to primary server if previous request was failed.
+    \item \textbf{3600000} expire - after this quantity of seconds secondary server mustn to use data about this zone.
+\end{enumerate}
+
+SOA record allows administrators fine tune parameters of caching of nameservers and they can set high caching to reduce network flood or set minimal caching to debugging.
+
+\end{document}

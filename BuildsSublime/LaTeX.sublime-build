@@ -1,0 +1,17 @@
+{
+    "selector": "text.tex.latex",
+
+    "variants": [
+        { "name": "Build",
+          "shell_cmd": "pdflatex -shell-escape $file"
+        },
+
+        { "name": "Run",
+          "shell_cmd": "pdflatex -shell-escape $file && open $file_base_name.pdf"
+        },
+
+        { "name": "Cleanup",
+          "shell_cmd": "rm -rf *.{log,toc,aux}"
+        }        
+    ]
+}

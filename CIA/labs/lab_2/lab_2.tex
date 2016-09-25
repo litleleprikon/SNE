@@ -1,0 +1,259 @@
+%%% Template originaly created by Karol Kozioł (mail@karol-koziol.net) and modified for ShareLaTeX use
+
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{soul,color}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumerate}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage[force,almostfull]{textcomp}
+\usepackage{geometry}
+
+\geometry{total={210mm,297mm},
+left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+
+\renewcommand*\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+
+\newcommand*{\TitleFont}{%
+      \usefont{\encodingdefault}{\rmdefault}{b}{n}%
+      \fontsize{16}{20}%
+      \selectfont}
+
+
+\linespread{1.3}
+
+\newcommand{\linia}{\rule{\linewidth}{0.5pt}}
+
+% custom theorems if needed
+\newtheoremstyle{mytheor}
+    {1ex}{1ex}{\normalfont}{0pt}{\scshape}{.}{1ex}
+    {{\thmname{#1 }}{\thmnumber{#2}}{\thmnote{ (#3)}}}
+
+\theoremstyle{mytheor}
+\newtheorem{defi}{Definition}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace{2ex}
+{\huge \textsc{\@title}}
+\vspace{1ex}
+\\
+\linia\\
+\@author \hfill \@date
+\vspace{4ex}
+\end{center}
+}
+\makeatother
+%%%
+
+% custom footers and headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{Assignment \#2: Booting(2) }
+\cfoot{}
+\rfoot{Page \thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+%
+
+% code listing settings
+\usepackage{listings}
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    aboveskip={1.0\baselineskip},
+    belowskip={1.0\baselineskip},
+    columns=fixed,
+    extendedchars=true,
+    breaklines=true,
+    tabsize=4,
+    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=lines,
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    keywordstyle=\color[rgb]{0.627,0.126,0.941},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{01,0,0},
+    numbers=left,
+    numberstyle=\small,
+    stepnumber=1,
+    numbersep=10pt,
+    captionpos=t,
+    escapeinside={\%*}{*)}
+}
+
+%%%----------%%%----------%%%----------%%%----------%%%
+
+\begin{document}
+
+\title{\TitleFont Assignment \#2: Booting(2) }
+
+\author{Emil Sharifulllin, Innopolis University}
+
+\date{\today}
+
+\maketitle
+
+\section{Loading the OS}
+\subsection{What is an UEFI OS loader and where does the Ubuntu OS loader reside on the system?}
+An UEFI OS loader is a special firmware that defines boot device and starts OS loader from special partition on this device. Ubuntu OS loader must be placed at <UEFI System Partition>/efi/boot/. \hl{At my system OS loader is stored at  ls /boot/grub/}
+
+\begin{lstlisting}
+$ ls /boot/grub
+fonts  grub.cfg  grubenv  locale  unicode.pf2  x86_64-efi
+\end{lstlisting}
+
+\subsection{Describe in order all the steps required for booting the computer (until the OS loader starts running.)}
+
+\begin{enumerate}
+    \item System started, POST check running.
+    \item UEFI is loaded from ROM.
+    \item UEFI starts load manager that defines what kind of applications to load.
+    \item Firmware runs UEFI application with FAT32 filesystem from UEFISYS partition.
+    \item UEFI application runs kernel and initramfs.
+\end{enumerate}
+
+\hl{To show parameters of boot order we can use efibootmgr}
+
+\begin{lstlisting}
+$ efibootmgr 
+BootCurrent: 0000
+Timeout: 0 seconds
+BootOrder: 0000,0007,0001,0002,0003,0008,0004,0005,0006
+Boot0000* ubuntu
+Boot0001* DTO UEFI USB Floppy/CD
+Boot0002* DTO UEFI USB Hard Drive
+Boot0003* DTO UEFI ATAPI CD-ROM Drive
+Boot0004* CD/DVD Drive 
+Boot0005* DTO Legacy USB Floppy/CD
+Boot0006* Hard Drive
+Boot0007* IP4 Intel(R) Ethernet Connection I217-LM
+Boot0008* IP6 Intel(R) Ethernet Connection I217-LM
+\end{lstlisting}
+
+\subsection{What is the purpose of the GRUB boot loader in a UEFI system?}
+GRUB loader can load OS from filesystems that can be not supported by UEFI as example NTFS. Also GRUB can show you beautiful wallpaper. 
+
+\subsection{How does the UEFI OS loader load the GRUB boot loader?}
+Firstly UEFI loader searches special NVRAM variable that contains a pointer to the hardware device and to a file on that hardware device that contains the UEFI image with GRUB. After that UEFI loader call this loader, this process is called boot chaining. \hl{But this process cannot be possible if Secure Boot is enabled. For Secure Boot systems we need to install middleware loader for example Shim or PRELoader. This loaders allow you to run signed linux kernel code.}
+
+\subsection{Explain how the GRUB boot loader, in turn, loads and run the kernel by answering these 3 questions:}
+
+\subsubsection{What type of filesystem is the kernel on?}
+It can be any filesystem that can be supported by OS loader. \hl{In my case there is ext4.}
+
+\begin{lstlisting}
+$ df -T | awk '{print $1,$2,$NF}' | grep "^/dev"
+/dev/sda2 ext4 /
+/dev/sda1 vfat /boot/efi
+\end{lstlisting}
+
+\subsubsection{What type(s) of filesystem does UEFI support?}
+UEFI defines a specific version of the FAT file system, which is maintained as part of the UEFI specification and independently from the original FAT specification, encompassing a variant of the FAT32 file system on ESPs, and FAT16 and FAT12 file systems on removable media. ESP is recommended to be at least 512 MiB in size and formatted with a FAT32 filesystem for maximum compatibility.
+\subsubsection{What does the GRUB boot loader therefore have to do to load the kernel?}
+Grub will find the /boot/grub/menu.lst which configures its interactive menu. The location of the menu.lst, as well as stage1.5 and stage2 files, is hard-coded into grub when it is installed to the boot sector. Grub locates and loads the kernel and kernel run /sbin/init or systemd. \hl{GRUB also can load kernel from different types of filesystems not only fat. GRUB have special UEFI applicatios which allows GRUB to work with different filesystems} 
+
+\subsection{Do you need an OS loader and/or boot loader to load a Linux kernel with UEFI? Explain why or why not.}
+It is not necessary to load GRUB loader, because UEFI can load OS if it is stored at ESP partition.
+
+\subsection{How many parts (or stages) does GRUB have in such a system, and what is their task?}
+\begin{enumerate}
+    \item boot.img is stored in the master boot record (MBR) or optionally in any of the volume boot records (VBRs), and addresses the next stage by an LBA48 address at installation time it is configured to load the first sector of core.img.
+    \item core.img is by default written to the sectors between the MBR and the first partition, when these sectors are free and available. For legacy reasons, the first partition of a hard drive does not begin at sector 1 (counting begins with 0) but at sector 63, leaving a gap of 62 sectors of empty space. That space is not part of any partition or file system, and therefore not prone to any problems related with it. Once executed, core.img will load its configuration file and any other modules needed, particularly file system drivers; at installation time, it is generated from diskboot.img and configured to load the stage 2 by its file path.
+    \item Stage 2: files belonging to the stage 2 are all being held in the /boot/grub directory, which is a subdirectory of the /boot directory specified by the Filesystem Hierarchy Standard (FHS).
+\end{enumerate}
+\subsection{Where are the different stages found on the disk?}
+All UEFI loader images must be placed at ESP at folder /boot/
+
+\section{Initializing the OS}
+\addtocounter{subsection}{8}
+\subsection{Describe the entire startup process of Ubuntu 16.04 in the default installation. The subquestions below are leaders to help you along, they must be answered but by no means represent the entire startup process of Ubuntu...}
+
+\hl{The entire process of booting is following:}
+
+\begin{itemize}
+    \item \hl{Firmaware starting. It works and then calls OS loader}
+    \item \hl{OS loader loads kernel from disk to RAM and then starts kernel}
+    \item \hl{Kernel should run initializer software which will start all daemons in particular order and with dependencies. In modern Linux based operating system as an initializer usually runs systemd.}
+\end{itemize}
+
+\hl{This process you can see on plot, thiat is connected with this pdf file.}
+
+\hl{systemd is a special daemon that kernel calls immediatelly after loading itself. systemd is a modern version of init.d. systemd improve booting of services with parallel loading.}\\
+\hl{But with parallel starting become new problem: how to require order of loading. systemd contain mechanism of dependencies. Any unit may want or require one or more other units before it can run. These dependencies are set in unit files with the directives Wants and Requires.}
+
+
+\subsubsection{What is the first process started by the kernel?}
+The first process is an /sbin/init(on older systems) or a systemd daemon that starts all other daemons.
+
+\subsubsection{Where is the configuration kept for the started process?}
+Configuration of systemd can be stored in many files that is called units. Units can be stored at three folders:
+\begin{enumerate}
+    \item \textbf{/usr/lib/systemd/system/} - units of software, which is installed from package managers(APT/RPM/YUM)
+    \item \textbf{/run/systemd/system/} - runtime defined units
+    \item \textbf{/etc/systemd/system/} - units defined by system administrator
+\end{enumerate}
+
+\subsubsection{It starts multiple processes. How is the order of execution defined?}
+In unit file at \textbf{Unit} section boot order can be defined with using \textbf{After} command. It defines after which processes certain process should be run.
+
+\subsection{To understand the workings of daemons in Ubuntu, we are going to take a closer look at one aspect of the booting process: networking. Please describe the workings of Ubuntu desktop here (Ubuntu server networking is actually simpler):}
+
+\subsubsection{How is the networking started? Include the names of all configuration files
+and utilities.}
+\hl{To enable networking systemd starts NetworkManager. This is software that manages network connections. NetworkManager can be seted up with /etc/network/interfaces file. This file contains information about all connections.
+
+To see how it starts lets call journalctl| grep -i network}
+
+\begin{lstlisting}
+$ journalctl| grep -i network
+Sep 22 15:48:04 sne-litleleprikon kernel: FUJITSU Extended Socket Network Device Driver - version 1.0 - Copyright (c) 2015 FUJITSU LIMITED
+Sep 22 15:48:04 sne-litleleprikon kernel: e1000e: Intel(R) PRO/1000 Network Driver - 3.2.6-k
+Sep 22 15:48:04 sne-litleleprikon kernel: e1000e 0000:00:19.0 eth0: Intel(R) PRO/1000 Network Connection
+Sep 22 15:48:14 sne-litleleprikon systemd[1]: Starting Network Time Synchronization...
+Sep 22 15:48:14 sne-litleleprikon systemd[1]: Started Network Time Synchronization.
+Sep 22 15:48:15 sne-litleleprikon audit[779]: AVC apparmor="STATUS" operation="profile_load" profile="unconfined" name="/usr/lib/NetworkManager/nm-dhcp-client.action" pid=779 comm="apparmor_parser"
+Sep 22 15:48:15 sne-litleleprikon audit[779]: AVC apparmor="STATUS" operation="profile_load" profile="unconfined" name="/usr/lib/NetworkManager/nm-dhcp-helper" pid=779 comm="apparmor_parser"
+Sep 22 15:48:15 sne-litleleprikon kernel: audit: type=1400 audit(1474548495.543:4): apparmor="STATUS" operation="profile_load" profile="unconfined" name="/usr/lib/NetworkManager/nm-dhcp-client.action" pid=779 comm="apparmor_parser"
+Sep 22 15:48:15 sne-litleleprikon kernel: audit: type=1400 audit(1474548495.543:5): apparmor="STATUS" operation="profile_load" profile="unconfined" name="/usr/lib/NetworkManager/nm-dhcp-helper" pid=779 comm="apparmor_parser"
+Sep 22 15:48:15 sne-litleleprikon systemd[1]: Started Trigger resolvconf update for networkd DNS.
+Sep 22 15:48:15 sne-litleleprikon systemd[1]: Starting Raise network interfaces...
+Sep 22 15:48:17 sne-litleleprikon avahi-daemon[831]: Network interface enumeration completed.
+Sep 22 15:48:17 sne-litleleprikon systemd[1]: Starting Network Manager...
+Sep 22 15:48:17 sne-litleleprikon systemd[1]: Started Raise network interfaces.
+Sep 22 15:48:18 sne-litleleprikon NetworkManager[890]: <info>  [1474548498.7910] NetworkManager (version 1.2.0) is starting...
+Sep 22 15:48:18 sne-litleleprikon NetworkManager[890]: <info>  [1474548498.7913] Read config: /etc/NetworkManager/NetworkManager.conf (etc: default-wifi-powersave-on.conf)
+Sep 22 15:48:18 sne-litleleprikon NetworkManager[890]: <info>  [1474548498.9759] manager[0xf1c1a0]: monitoring kernel firmware directory '/lib/firmware'.
+Sep 22 15:48:18 sne-litleleprikon NetworkManager[890]: <info>  [1474548498.9759] monitoring ifupdown state file '/run/network/ifstate'.
+Sep 22 15:48:19 sne-litleleprikon NetworkManager[890]: <info>  [1474548499.2517] dns-mgr[0xf2d8b0]: set resolv-conf-mode: dnsmasq, plugin="dnsmasq"
+Sep 22 15:48:19 sne-litleleprikon NetworkManager[890]: <info>  [1474548499.2517] dns-mgr[0xf2d8b0]: using resolv.conf manager 'resolvconf'
+Sep 22 15:48:19 sne-litleleprikon whoopsie[896]: [15:48:19] Could not get the Network Manager state:
+Sep 22 15:48:19 sne-litleleprikon whoopsie[896]: [15:48:19] GDBus.Error:org.freedesktop.DBus.Error.ServiceUnknown: The name org.freedesktop.NetworkManager was not provided by any .service files
+Sep 22 15:48:19 sne-litleleprikon systemd[1]: Started Network Manager.
+Sep 22 15:48:19 sne-litleleprikon systemd[1]: Reached target Network.
+Sep 22 15:48:19 sne-litleleprikon systemd[1]: Starting Network Manager Script Dispatcher Service...
+Sep 22 15:48:19 sne-litleleprikon systemd[1]: Started Network Manager Script Dispatcher Service.
+Sep 22 15:48:19 sne-litleleprikon NetworkManager[890]: <info>  [1474548499.7972] init!
+
+\end{lstlisting}
+
+\subsubsection{Which process manages the networking configuration?}
+\hl{For this purposes is used NetworkManager}
+
+\subsection{As a final installation step, make your experimentation server reachable over IPv6.}
+
+\end{document}
+\grid

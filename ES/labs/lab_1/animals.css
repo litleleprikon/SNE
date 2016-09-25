@@ -1,0 +1,16 @@
+body {
+	background-color: #84bcda;
+	color: #067bc2;
+}
+
+table {
+	color: #fcfff7;
+	background-color: #21a0a0;
+	border: solid 1px #046865;
+}
+
+td, th {border: solid 1px #046865;}
+
+.row:hover {
+	background-color: #046865;
+}

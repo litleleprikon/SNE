@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE animals>
+<?xml-stylesheet type="text/xsl" href="animals.xsl"?>
+<animals>
+	<animal name="cow">
+		<skin>brown</skin>
+		<noise>moo</noise>
+		<eyes>beauty</eyes>
+	</animal>
+	<animal name="sheep">
+		<skin>white</skin>
+		<noise>beee</noise>
+		<eyes>little</eyes>
+	</animal>
+	<animal name="horse">
+		<skin>brown</skin>
+		<noise>igogo</noise>
+		<eyes>dark and incredible</eyes>
+	</animal>
+	<animal name="pig">
+		<skin>pink</skin>
+		<noise>hry</noise>
+		<eyes>little and circle</eyes>
+	</animal>
+	<animal name="mockingbird">
+		<skin>gray</skin>
+		<noise>few few few</noise>
+		<eyes>smart</eyes>
+	</animal>
+	<animal name="eel">
+		<skin>yellow</skin>
+		<eyes>vicious</eyes>
+	</animal>
+</animals>

@@ -1,0 +1,388 @@
+%%% Template originaly created by Karol Kozioł (mail@karol-koziol.net) and modified for ShareLaTeX use
+
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{enumerate}
+\usepackage{multicol}
+\usepackage{tikz}
+\usepackage[force,almostfull]{textcomp}
+\usepackage{geometry}
+
+\geometry{total={210mm,297mm},
+left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+
+\renewcommand*\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+
+\newcommand*{\TitleFont}{%
+      \usefont{\encodingdefault}{\rmdefault}{b}{n}%
+      \fontsize{16}{20}%
+      \selectfont}
+
+
+\linespread{1.3
+}
+\newcommand{\linia}{\rule{\linewidth}{0.5pt}}
+
+% custom theorems if needed
+\newtheoremstyle{mytheor}
+    {1ex}{1ex}{\normalfont}{0pt}{\scshape}{.}{1ex}
+    {{\thmname{#1 }}{\thmnumber{#2}}{\thmnote{ (#3)}}}
+
+\theoremstyle{mytheor}
+\newtheorem{defi}{Definition}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace{2ex}
+{\huge \textsc{\@title}}
+\vspace{1ex}
+\\
+\linia\\
+\@author \hfill \@date
+\vspace{4ex}
+\end{center}
+}
+\makeatother
+%%%
+
+% custom footers and headers
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{Assignment \#3: DNS(1) }
+\cfoot{}
+\rfoot{Page \thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+%
+
+% code listing settings
+\usepackage{listings}
+\lstset{
+    % language=Bash,
+    basicstyle=\ttfamily\small,
+    aboveskip={1.0\baselineskip},
+    belowskip={1.0\baselineskip},
+    columns=fixed,
+    extendedchars=true,
+    breaklines=true,
+    tabsize=4,
+    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+    frame=lines,
+    showtabs=false,
+    showspaces=false,
+    showstringspaces=false,
+    keywordstyle=\color[rgb]{0.627,0.126,0.941},
+    commentstyle=\color[rgb]{0.133,0.545,0.133},
+    stringstyle=\color[rgb]{01,0,0},
+    numbers=left,
+    numberstyle=\small,
+    stepnumber=1,
+    numbersep=10pt,
+    captionpos=t,
+    escapeinside={\%*}{*)}
+}
+
+%%%----------%%%----------%%%----------%%%----------%%%
+
+\begin{document}
+
+\title{\TitleFont Assignment \#3: DNS(1) }
+
+\author{Emil Sharifulllin, Innopolis University}
+
+\date{\today}
+
+\maketitle
+
+\section{Introduction}
+The nameserver was deployed at Ubuntu:16.04 docker container: 
+
+\begin{lstlisting}
+$ cat /etc/*release
+DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=16.04
+DISTRIB_CODENAME=xenial
+DISTRIB_DESCRIPTION="Ubuntu 16.04.1 LTS"
+NAME="Ubuntu"
+VERSION="16.04.1 LTS (Xenial Xerus)"
+ID=ubuntu
+ID_LIKE=debian
+PRETTY_NAME="Ubuntu 16.04.1 LTS"
+VERSION_ID="16.04"
+HOME_URL="http://www.ubuntu.com/"
+SUPPORT_URL="http://help.ubuntu.com/"
+BUG_REPORT_URL="http://bugs.launchpad.net/ubuntu/"
+UBUNTU_CODENAME=xenial
+\end{lstlisting}
+
+
+\section{Downloading and Installing a Caching Nameserver}
+Nameserver can be downloaded from site http://www.isc.org by following command:
+\begin{lstlisting}
+$ wget -O bind.tar.gz https://www.isc.org/downloads/file/bind-9-10-4-p2/?version=tar-gz
+\end{lstlisting}
+
+To unarchieve tarbal we can use following command:
+\begin{lstlisting}
+$ tar -xzvf bind.tar.gz
+\end{lstlisting}
+
+\subsection{Validating the Download}
+Download can ve validated by GPG with ASC file. To download this file and check package we can use following bash command.
+
+\begin{lstlisting}
+$ wget -O bind.tar.gz.asc ftp://ftp.isc.org/isc/bind9/9.10.4-P2/bind-9.10.4-P2.tar.gz.asc
+$ gpg --verify bind.tar.gz.asc bind.tar.gz
+gpg: Signature made Mon Jul 18 22:59:45 2016 UTC using RSA key ID 911A4C02
+gpg: Good signature from "Internet Systems Consortium, Inc. (Signing key, 2015-2016) <codesign@isc.org>"
+\end{lstlisting}
+
+\textbf{Why is it wise to use a signature to check your download?}\\
+Signing is very important because after checking signature you can be sure that certain tarbal is right and no one can spoof this tarbal.
+
+\textbf{Which kind of signature is the best one to use? Why?}\\
+PGP signing is the safest way to check package validity because probability of collision of PGP key is lower than probability of collision of SHA key. 
+
+\subsection{Installation Documentation}
+Documentation can be found in doc/ directory. README file contains installation guides and is located at root installation directory.
+
+\subsection{Compiling}
+To compile bind you need to rum following commands:
+\begin{lstlisting}
+$ ./configure
+$ make
+$ make install
+\end{lstlisting}
+
+\section{Configuring and Testing}
+
+After installing DNS server we will start to configure it.\\
+
+\textbf{Why are caching-only name servers still useful?}\\
+It can store resourse Records during theirs TTL to decrease DNS resolving time and decrease network flood. It can reduce the time needed to internet communication.\\
+
+\subsection{Main Configuration}
+To configure BIND as a caching server it is necessary to create file /etc/named.conf . To enable remote control to nameserver we need to generate keys for RNDC.
+
+\begin{lstlisting}
+$ rndc-confgen
+# Start of rndc.conf
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "VERY SECRET";
+};
+
+options {
+    default-key "rndc-key";
+    default-server 127.0.0.1;
+    default-port 953;
+};
+
+\end{lstlisting}
+
+\subsection{Root Servers}
+BIND needs list of root servers to work. this list can be downloaded from ftp://ftp.rs.
+internic.net/domain. In named.conf we need to define path to root severs cache file.
+
+\begin{lstlisting}
+zone "." {
+    type hint;
+    file "named.root";
+};
+\end{lstlisting}
+
+\subsection{Resolving localhost}
+To enable reverse mapping for loopback address 127.0.0.1 we need to add zone file.
+\begin{lstlisting}[]
+$TTL 86400
+@ IN SOA localhost. admin.localhost. (
+1   ; serial
+360000  ; refresh every 100 hours
+3600    ; retry after 1 hour
+3600000 ; expire after 1000 hours
+3600    ; negative cache is 1 hour
+)
+
+    IN  NS  ns.st10.os3.su.
+0   IN  PTR loopback.
+1   IN  PTR localhost.
+\end{lstlisting}
+
+\textbf{Now that you know all the elements of the main configuration, create
+a simple named.conf or unbound.conf for a caching-only name server.
+Show the configuration file in your report.}\\
+
+\begin{lstlisting}
+//Define a access list to limit recursion later
+acl localnet {
+    127.0.0.1/32;
+};
+
+controls {
+    inet 127.0.0.1 port 953
+        allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "xxsGwSWnOTIOvyIbdFjtAQ==";
+};
+
+
+// Working directory and limit recursion
+options {
+    directory "/etc/bind";
+    allow-recursion {
+        localnet;
+    };
+};
+
+// Caching only DNS server
+zone "." {
+    type hint;
+    file "named.root";
+};
+
+zone "st10.os3.su." {
+    type master;
+    file "st10.os3.su.zone";
+};
+
+// Provide a reverse mapping for the loopback address 127.0.0.1
+zone "0.0.127.in-addr.arpa" {
+type master;
+file "local.zone";
+notify no;
+};
+\end{lstlisting}
+
+\subsection{Testing}
+To test configuration files we can use two checkconf and checkzone programs
+
+\begin{lstlisting}
+$ named-checkconf
+$ echo $?
+0
+$ named-checkzone localhost /etc/bind/local.zone
+zone localhost/IN: loaded serial 1
+OK
+\end{lstlisting}
+
+\subsubsection{Testing of cache server}
+\begin{lstlisting}
+$ dig google.com @127.0.0.1
+...
+;; Query time: 318 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1)
+...
+
+$ dig google.com @127.0.0.1
+...
+;; Query time: 0 msec
+;; SERVER: 127.0.0.1#53(127.0.0.1)
+...
+\end{lstlisting}
+
+\textbf{Why do the programs return a result value?}\\
+Returning result value is very useful and can be used in bash scripts.
+
+\section{Running and Improving the Name Server}
+
+\textbf{Show the changes you made to your configuration to allow remote control}\\
+To allow rndc tool I added to named.conf following lines:
+
+\begin{lstlisting}[caption=named.conf]
+controls {
+    inet 127.0.0.1 port 953
+        allow { 127.0.0.1; } keys { "rndc-key"; };
+};
+
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "xxsGwSWnOTIOvyIbdFjtAQ==";
+};
+\end{lstlisting}
+
+\begin{lstlisting}[caption=rndc.conf]
+key "rndc-key" {
+    algorithm hmac-md5;
+    secret "xxsGwSWnOTIOvyIbdFjtAQ==";
+};
+
+options {
+    default-key "rndc-key";
+    default-server 127.0.0.1;
+    default-port 953;
+};
+
+\end{lstlisting}
+
+\textbf{What other commands/functions does rndc/unbound-control provide?}
+rndc allows you to control nameserver without stopping and restarting nameserver daemon.
+
+\textbf{What do you need to put in resolv.conf (and/or other files) to use your own name server?}\\
+Adding namesevers to resolv.conf is the bad way because after restarting network manager will restore previous values of resolv.conf. To configure Ubuntu to use my own nameserver I need to add following strings to /etc/resolvconf/resolv.conf.d/base and then run sudo resolvconf -u
+
+\begin{lstlisting}
+nameserver 127.0.0.1
+\end{lstlisting}
+
+\section{Configuring an Authoritative Nameserver}
+
+\textbf{Show the forward mapping zone file in your log.}\\
+My zone file contain following information:
+
+\begin{lstlisting}
+$TTL 86400
+@ IN SOA ns10.os3.su. admin.st10.os3.su. (
+2016082900  ; serial
+360000  ; refresh every 100 hours
+3600    ; retry after 1 hour
+3600000 ; expire after 1000 hours
+3600    ; negative cache is 1 hour
+)
+
+
+@       IN  NS      ns10.os3.su.
+@       IN  A       188.130.155.43
+@       IN  MX  10  mail
+st11    IN  NS      ns11.os3.su.
+ns      IN  A       188.130.155.43
+www     IN  A       188.130.155.43
+mail    IN  A       188.130.155.43
+web     IN  CNAME   www
+mob     IN  CNAME   www
+ns1     IN  CNAME   ns
+ns2     IN  CNAME   ns
+\end{lstlisting}
+
+\textbf{If Azat had not yet implemented the delegation, what information would you need
+to give him so that he can implement it?}\\
+To setup delegation for my zone st10.os3.su. Azat must know three things:
+\begin{enumerate}
+    \item \textbf{My zone:} st10.os3.su
+    \item \textbf{My ip address:} 188.130.155.43
+    \item \textbf{My nameserver:} ns10.os3.su
+\end{enumerate}
+
+\textbf{What important requirement is not yet met for your subdomain?}\\
+\begin{enumerate}
+    \item We need to setup secondary nameserver to provide fault tolerance.
+    \item We need to add SOA record for subdomain and A records for subdomain nameservers.
+\end{enumerate}
+
+\end{document}
+
+\grid
