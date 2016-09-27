@@ -1,44 +1,43 @@
-%%% Template originaly created by Karol Kozioł (mail@karol-koziol.net) and modified for ShareLaTeX use
-
 \documentclass[a4paper,11pt]{article}
-
-\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
-\usepackage{xcolor}
-\usepackage{amsmath,amssymb,amsthm}
 \usepackage{enumerate}
-\usepackage{multicol}
-\usepackage{tikz}
-\usepackage[force,almostfull]{textcomp}
 \usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{minted}
+\usepackage{xcolor}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue]{hyperref}
 
 \geometry{total={210mm,297mm},
 left=25mm,right=25mm,%
 bindingoffset=0mm, top=20mm,bottom=20mm}
+
+\graphicspath{ {./images/} }
 
 \renewcommand{\thesubsubsection}{\thesubsection.\alph{subsubsection}}
 
 \renewcommand*\sfdefault{phv}
 \renewcommand\familydefault{\sfdefault}
 
+% \renewcommand{\thesubsubsection}{\thesubsection.\alph{subsubsection}}
+
+% \newmintedfile{html}{
+%     linenos,
+%     breaklines,
+%     python3,
+%     numbersep=8pt,
+%     frame=single,
+%     framesep=3mm} 
+
 \newcommand*{\TitleFont}{%
       \usefont{\encodingdefault}{\rmdefault}{b}{n}%
       \fontsize{16}{20}%
       \selectfont}
 
-
 \linespread{1.3}
-
-\newcommand{\linia}{\rule{\linewidth}{0.5pt}}
-
-% custom theorems if needed
-\newtheoremstyle{mytheor}
-    {1ex}{1ex}{\normalfont}{0pt}{\scshape}{.}{1ex}
-    {{\thmname{#1 }}{\thmnumber{#2}}{\thmnote{ (#3)}}}
-
-\theoremstyle{mytheor}
-\newtheorem{defi}{Definition}
 
 % my own titles
 \makeatletter
@@ -48,66 +47,66 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 {\huge \textsc{\@title}}
 \vspace{1ex}
 \\
-\linia\\
+\rule{\linewidth}{0.5pt}\\
 \@author \hfill \@date
 \vspace{4ex}
 \end{center}
 }
 \makeatother
-%%%
+
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
 
 % custom footers and headers
-\usepackage{fancyhdr}
 \pagestyle{fancy}
 \lhead{}
 \chead{}
 \rhead{}
-\lfoot{Assignment 6 : MTA(1) }
+\lfoot{Assignment 2 : Regular expression/ text processing tools/ autotools }
 \cfoot{}
 \rfoot{Page \thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
-%
-
-% code listing settings
-\usepackage{listings}
-\lstset{
-    language=Bash,
-    basicstyle=\ttfamily\small,
-    aboveskip={1.0\baselineskip},
-    belowskip={1.0\baselineskip},
-    columns=fixed,
-    extendedchars=true,
-    breaklines=true,
-    tabsize=4,
-    prebreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
-    frame=lines,
-    showtabs=false,
-    showspaces=false,
-    showstringspaces=false,
-    keywordstyle=\color[rgb]{0.627,0.126,0.941},
-    commentstyle=\color[rgb]{0.133,0.545,0.133},
-    stringstyle=\color[rgb]{01,0,0},
-    numbers=left,
-    numberstyle=\small,
-    stepnumber=1,
-    numbersep=10pt,
-    captionpos=t,
-    escapeinside={\%*}{*)}
-}
-
-%%%----------%%%----------%%%----------%%%----------%%%
+%%----------%%%----------%%%----------%%%----------%%%
 
 \begin{document}
 
-\title{\TitleFont Assignment 6 : MTA(1) }
+\newminted{bash}{fontsize=\scriptsize, 
+    linenos,
+    breaklines,
+    numbersep=8pt,
+    frame=single,
+    bgcolor=bg,
+    framesep=3mm} 
 
-\author{Emil Sharifulllin(G3, \#3), Innopolis University}
+\newminted{makefile}{fontsize=\scriptsize, 
+    linenos,
+    breaklines,
+    numbersep=8pt,
+    frame=single,
+    bgcolor=bg,
+    framesep=3mm} 
+
+
+
+% \newminted{all}{linenos, frame=single}
+
+% \usemintedstyle{monokai}
+\usemintedstyle{manni}
+% \usemintedstyle{xcode}
+% \usemintedstyle{vs}
+% \usemintedstyle{autumn}
+% \usemintedstyle{colorful}
+% \usemintedstyle{trac}
+
+
+\title{ \TitleFont Assignment 6 : MTA(1) }
+
+\author{Emil Sharifulllin, Innopolis University}
 
 \date{\today}
 
 \maketitle
-
 \section{Mail Tranfer Agents}
 As a MTA I chose Postfix.
 
@@ -116,42 +115,42 @@ As a MTA I chose Postfix.
 \subsubsection{Deleteing pre installed MTA}
 I working with ubuntu docker container. To be sure that this system wasn't contain preinstalled MTA I ran following commands:
 
-\begin{lstlisting}
+\begin{bashcode}
 $ dpkg --get-selections | grep postfix
 $ dpkg --get-selections | grep sendmail
 $ dpkg --get-selections | grep exim
 
-\end{lstlisting}
+\end{bashcode}
 
 \subsubsection{Package downloading}
 Firstly it is needed to download tarball, signature and public key
 
-\begin{lstlisting}
+\begin{bashcode}
 $ wget http://mirror.lhsolutions.nl/postfix-release/official/postfix-3.1.2.tar.gz
 $ wget http://mirror.lhsolutions.nl/postfix-release/official/postfix-3.1.2.tar.gz.gpg2
 $ wget http://mirror.lhsolutions.nl/postfix-release/wietse.pgp
-\end{lstlisting}
+\end{bashcode}
 
 \subsubsection{Package verification}
 
 We must to verify tarbal.
-\begin{lstlisting}
+\begin{bashcode}
 $ gpg -v --import wietse.pgp
 $ gpg --verify postfix-3.1.2.tar.gz.gpg2 postfix-3.1.2.tar.gz
 gpg: Signature made Sat Aug 27 23:56:24 2016 UTC using DSA key ID 80CA15A7
 gpg: Good signature from "Wietse Venema <wietse@porcupine.org>"
-\end{lstlisting}
+\end{bashcode}
 
 \subsubsection{Installation}
 To install package firstly unpack it. After unpacking we need to configure building.
 
-\begin{lstlisting}
+\begin{bashcode}
 $ tar -xzvf postfix-3.1.2.tar.gz
 $ cd postfix-3.1.2
 $ make -f Makefile.init makefiles
 $ make tidy
 $ make makefiles shared=yes dynamicmaps=yes pie=no
-\end{lstlisting}
+\end{bashcode}
 Here used three compiling options:
 \begin{itemize}
     \item \textbf{shared=yes} to allow Postfix use shared libraries
@@ -159,7 +158,429 @@ Here used three compiling options:
     \item \textbf{pie=no} deny Position-Independent Executables, that can be used for ASLR exploit mitigation technique
 \end{itemize}
 
-\subsection{Configuring}
+\subsection{DNS Configuration}
+\subsubsection{What are you need to add to you DNS zone}
+To my zone file I added following lones: 
+\begin{bashcode*}{label="/etc/named/st10.os3.su.zone"}
+@               IN      MX      10      mail
+mail            IN      A               188.130.155.43
+\end{bashcode*}
 
+\subsubsection{What extra information should be modified in PTR records for your IP, please provide this information to Azat.}
+Azat should add this ptr record to his own nameserver: 
+
+\begin{bashcode}
+188.130.155.43       IN      PTR     st10.os3.su.
+\end{bashcode}
+
+\subsection{MTA Configuration}
+\subsubsection{Add a local account e.sharifullin@st10.os3.su on your experimental machine and make sure that the MTA can deliver mail to it. Show the required configuration.}
+
+For the first time postfix requires config file that is stored in /etc/postfix/main.cf and in my case this file contain following data:
+
+\begin{bashcode*}{label=/etc/postfix/main.cf}
+command_directory = /usr/sbin
+compatibility_level = 2
+daemon_directory = /usr/libexec/postfix
+data_directory = /var/lib/postfix
+debug_peer_level = 2
+debugger_command = PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin ddd $daemon_directory/$process_name $process_id & sleep 5
+html_directory = no
+inet_interfaces = all
+inet_protocols = ipv4
+mail_owner = postfix
+mailq_path = /usr/bin/mailq
+manpage_directory = /usr/local/man
+meta_directory = /etc/postfix
+mydestination = st10.os3.su
+mydomain = st10.os3.su
+myhostname = st10.os3.su
+mynetworks = 172.17.0.0/16, 127.0.0.0/8
+myorigin = $myhostname
+queue_directory = /var/spool/postfix
+relayhost =
+sample_directory = /etc/postfix
+sendmail_path = /usr/sbin/sendmail
+setgid_group = postdrop
+shlib_directory = no
+smtputf8_enable = no
+unknown_local_recipient_reject_code = 550
+\end{bashcode*}
+
+After this I needed to add aliases to /etc/aliases file and then run newaliases
+\begin{bashcode}
+$ cat /etc/aliases
+root: postfix
+e.sharifullin: postfix
+postmaster: postfix
+$ newaliases
+\end{bashcode} 
+
+Last step is to run postfix: 
+\begin{bashcode}
+$ postfix start
+postfix/postfix-script: starting the Postfix mail system
+\end{bashcode}
+
+\subsubsection{Add to your log an email received by this account. Do not forget the full headers!}
+I sent e-mail from my gmail account and this is what I received:
+
+\begin{bashcode}
+From litleleprikon@gmail.com  Mon Sep 26 15:09:01 2016
+Return-Path: <litleleprikon@gmail.com>
+X-Original-To: e.sharifullin@st10.os3.su
+Delivered-To: e.sharifullin@st10.os3.su
+Received: from mail-wm0-f68.google.com (mail-wm0-f68.google.com [74.125.82.68])
+    by st10.os3.su (Postfix) with ESMTP id 3ED3689E
+    for <e.sharifullin@st10.os3.su>; Mon, 26 Sep 2016 15:09:01 +0000 (UTC)
+Received: by mail-wm0-f68.google.com with SMTP id 133so14574992wmq.2
+        for <e.sharifullin@st10.os3.su>; Mon, 26 Sep 2016 08:09:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=from:content-transfer-encoding:mime-version:subject:message-id:date
+         :to;
+        bh=pasntimjPlgZDfPyc7YFqiYi/UYrI8NHpFJ53+2Ysb8=;
+        b=vi7rK/t4Qpy/hzwWUGMZb/w5tyufJ+IY9TKm5tzEvXE/U/b/vCfV2lbVeCpSj+XkMo
+         SzWz7GnXH2XNy1+r7avkEs1z6TqXidKOs9R4B8FQfs3xOZ67UoLyDeRjCe+sWCUQMe2e
+         YE8mMNx9dCCyQ4BToYccuBTfuUCA6ilYKVPr8fog+anntN9Er9e1eLaa9Jql3x8/EqjQ
+         lRkSYOIP3L+65La2+L4ZLXHHNynZXpZBJ0L9ecS7uQKaLR8zVU61YPEq4m4t9Jq0SW0h
+         uRinZp7InMazvpFFGTdP0jxtsz8RrgoQKdO/1mlV2LS4i0zWzGcHFWl2CD9FPg4eHaol
+         cMAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:from:content-transfer-encoding:mime-version
+         :subject:message-id:date:to;
+        bh=pasntimjPlgZDfPyc7YFqiYi/UYrI8NHpFJ53+2Ysb8=;
+        b=Pr4JsT6p0naIA9S213T8U7mjnF3Rs+3IStbSwlOKEWLzvZF3X6LSmmxNAXnpi7dgGt
+         dTV9jyYSJSk+L8pT9S4Lm1oFZqIq7MNxHu4GyFcuFLyi86+BzqdK+bIK2EG5/POEvFPq
+         eCt7IDxYkjvPsgBV/7AO1UYhn4/0vAIH3lyCP4+N8ljCIgxCna5UXPrLGKoVkzXVi3OQ
+         qNBiaBzkEvxW0RroF12J3muxVAdXHCEHyQjAiRClz+lRy3SfNeBN46dK6u/b2YJI70ex
+         pWrD6yNsMnQDmiN8M+YxNq0H3A4P2pkqK0CW/WQBS+0LDK/jmkPzNQNjQ41LCl7KDbjp
+         f8mQ==
+X-Gm-Message-State: AE9vXwMsIdsFcR1VnY1x9TD1ZY3BxFBzeeXo0Gj5zBDGNdtRvNqKPt2j8vyDC/46XkBmWA==
+X-Received: by 10.194.93.198 with SMTP id cw6mr18665097wjb.212.1474902540632;
+        Mon, 26 Sep 2016 08:09:00 -0700 (PDT)
+Received: from [10.240.23.110] ([188.130.155.154])
+        by smtp.gmail.com with ESMTPSA id a84sm11791478wme.6.2016.09.26.08.08.59
+        for <e.sharifullin@st10.os3.su>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 26 Sep 2016 08:08:59 -0700 (PDT)
+From: Emil Sharifullin <litleleprikon@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 10.0 \(3226\))
+Subject: Hello my dear friend!
+Message-Id: <5C8E93A4-745A-4944-922B-20E79E11BAD3@gmail.com>
+Date: Mon, 26 Sep 2016 18:08:58 +0300
+To: e.sharifullin@st10.os3.su
+X-Mailer: Apple Mail (2.3226)
+
+Good morning my dear friend!
+
+I realised that you didn=E2=80=99t finish MTA(1) assignment. So you are =
+lazy dude!
+
+Sincerely yours.
+Emil A. Sharifullin=
+
+\end{bashcode}
+
+\subsubsection{Try to send email by the telnet command, please provide the output of your results.}
+\begin{bashcode}
+$ telnet st10.os3.su 25   
+Trying 188.130.155.43...
+Connected to st10.os3.su.
+Escape character is '^]'.
+220 st10.os3.su ESMTP Postfix
+ehlo st10.os3.su
+250-st10.os3.su
+250-PIPELINING
+250-SIZE 10240000
+250-VRFY
+250-ETRN
+250-ENHANCEDSTATUSCODES
+250-8BITMIME
+250 DSN
+mail from: litleleprikon@innopolis.ru  
+250 2.1.0 Ok
+rcpt to: e.sharifullin@st10.os3.su            
+250 2.1.5 Ok
+data
+354 End data with <CR><LF>.<CR><LF>
+Subject: My Telnet Test Email
+
+Hello my dear friend!)
+
+.
+250 2.0.0 Ok: queued as 666A589E
+\end{bashcode}
+
+\subsubsection{Also make sure that any email intended for postmaster@st10.os3.su is delivered to this account. Show the full email as delivered to the new ac- count and the required configuration.}
+\begin{bashcode}
+From litleleprikon@gmail.com  Mon Sep 26 17:27:15 2016
+Return-Path: <litleleprikon@gmail.com>
+X-Original-To: postmaster@st10.os3.su
+Delivered-To: postmaster@st10.os3.su
+Received: from mail-lf0-f66.google.com (mail-lf0-f66.google.com [209.85.215.66])
+    by st10.os3.su (Postfix) with ESMTP id B732589E
+    for <postmaster@st10.os3.su>; Mon, 26 Sep 2016 17:27:15 +0000 (UTC)
+Received: by mail-lf0-f66.google.com with SMTP id b71so9124924lfg.1
+        for <postmaster@st10.os3.su>; Mon, 26 Sep 2016 10:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=from:content-transfer-encoding:mime-version:subject:message-id:date
+         :to;
+        bh=zS7KNTV0HyeorkDDGwxB1AV6enuRKzO5rthkhdHIRnY=;
+        b=RG2aXSjXeYyZYMTGWv8KhrHLYdBtAfBBjVPy42dGeHJR51NGhYsY9R6DzEIr/vBGys
+         7bb32poCYaV5FoiDBwjFxTrwodmelDHOxZAnjxiNAgRnjigdkcrtRUtPvpWv4UXynNes
+         JMDFti9jYyIc9ui9xX4a8IEW2S1vjkALPhVhWjPW0X9KsZ2B4ahSxXQSGR9nX1TibCEc
+         6rO64y+uslCUerC6zrj0YPrdtvfhn7Nt6xdFQIMOCc8avwxOTYARnguR35bX8IfsxqES
+         HdS0m//0CS8hW4EEAuoFAQd3eH9vfZszHI1S8h9jjlJN6FukHR5c2PZMHD3GRuJzuPoe
+         SYJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:from:content-transfer-encoding:mime-version
+         :subject:message-id:date:to;
+        bh=zS7KNTV0HyeorkDDGwxB1AV6enuRKzO5rthkhdHIRnY=;
+        b=AX/UQAAdLLcwG7fDlrnzzrVuAZJsrug1w+rgqUWYUFGrkE+t++Bx0sRKvw17+fwqAz
+         g0CDuAo4jfS3phlrTUQI8c0a5Ql0TluqgrlNUSnrF+AuruOFajfpM9fH5sJ6pIX3vLow
+         gSIYJK5Zz1V8kQydjmFSxh9mczE72n61tbkTRmhCQHcS+sgFoQHoIagtSD0nH0itN5qK
+         DZBMVJpO6VDAqjpiQHfbMib2IA63d8cbgIlxawSX4lYwJm2qENJpRs/mNAFwX6MYvHP7
+         9egfWinxe45i+XMu9JAcTdNUzNorEk88YWiorGalSNJAbcaccitRapCzg0cPJgvSBGo4
+         p5yA==
+X-Gm-Message-State: AE9vXwN7oZwIoRKqpJDluYHJWfVHDdHddO9/jV31mJRk8P7J8SZ5lrsdJgfGlv2lcmWPFQ==
+X-Received: by 10.194.122.137 with SMTP id ls9mr24014921wjb.29.1474910835123;
+        Mon, 26 Sep 2016 10:27:15 -0700 (PDT)
+Received: from [10.240.23.110] ([188.130.155.154])
+        by smtp.gmail.com with ESMTPSA id vh6sm23448898wjb.0.2016.09.26.10.27.14
+        for <postmaster@st10.os3.su>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 26 Sep 2016 10:27:14 -0700 (PDT)
+From: Emil Sharifullin <litleleprikon@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+Mime-Version: 1.0 (Mac OS X Mail 10.0 \(3226\))
+Subject: Helo
+Message-Id: <EAA44DA4-5204-4CD6-8632-196BAEA6BDC1@gmail.com>
+Date: Mon, 26 Sep 2016 20:27:13 +0300
+To: postmaster@st10.os3.su
+X-Mailer: Apple Mail (2.3226)
+
+hello
+
+\end{bashcode}
+
+\section{Mail Backup}
+\addtocounter{subsection}{3}
+\subsection{First, describe you have done on your own server to create two backup MTAs for your domain. Do not describe how you made your server fallback for the other domains at the same time, that is the next question. This makes grading easier for the lab teachers.}
+To enable backup MTA's for my server I added to my zone file two MX records. This records must have higher preference value than my primary MX record.
+
+\begin{bashcode*}{label=/etc/named/at10.os3.su.zone}
+@       IN  MX  10  mail
+@       IN  MX  20  mail.st11.os3.su.
+@       IN  MX  30  mail.st14.os3.su.
+\end{bashcode*}
+
+\subsection{Afterwards, describe what you have done on your own server to make it act as a backup for the two otherdomains.}
+
+To make my MTA to work as a backup server for my colleagues I added following string in my mail config.
+
+\begin{bashcode*}{label=/etc/postfix/main.cf}
+relay_domains = st11.os3.su, st14.os3.su
+\end{bashcode*}
+
+\subsection{Shut down your MTA, send a mail to your domain and show}
+\subsubsection{The email is delivered to one of your colleaques.}
+I shot down my postfix server and sent mail to it.
+
+At my backup server I saw following:
+
+\begin{bashcode}
+$ mailq
+MSP Queue status...
+/var/spool/mqueue-client is empty
+  Total requests: 0
+MTA Queue status...
+  /var/spool/mqueue (1 request)
+-----Q-ID----- --Size-- -----Q-Time----- ------------Sender/Recipient-----------
+u8QICEod010646      137 Mon Sep 26 21:12 <litleleprikon@gmail.com>
+                 (Deferred: Connection refused by mail.st10.os3.su.)
+      <postmaster@st10.os3.su>
+  Total requests: 1
+\end{bashcode}
+
+\begin{bashcode}
+/var/spool/mqueue# cat dfu8QICEod010646 qfu8QICEod010646 
+This message I sent to my fallen postfix
+> On 26 Sep 2016, at 8:27 PM, Emil Sharifullin <litleleprikon@gmail.com> =
+wrote:
+>=20
+> hello
+
+V8
+T1474913537
+K1474914194
+N3
+P302668
+I8/2/24775594
+MDeferred: Connection refused by mail.st10.os3.su.
+Fbs
+$_mail-qk0-f178.google.com [209.85.220.178]
+$rESMTPS
+$smail-qk0-f178.google.com
+${daemon_flags}
+${if_addr}188.130.155.44
+S<litleleprikon@gmail.com>
+rRFC822; postmaster@st10.os3.su
+RPFD:<postmaster@st10.os3.su>
+H?P?Return-Path: <g>
+H??Received: from mail-qk0-f178.google.com (mail-qk0-f178.google.com [209.85.220.178])
+ by st11.os3.su (8.15.2/8.15.2/Debian-3) with ESMTPS id u8QICEod010646
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+ for <postmaster@st10.os3.su>; Mon, 26 Sep 2016 21:12:17 +0300
+H??Received: by mail-qk0-f178.google.com with SMTP id g67so113687365qkd.0
+        for <postmaster@st10.os3.su>; Mon, 26 Sep 2016 11:12:16 -0700 (PDT)
+H??DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=from:content-transfer-encoding:mime-version:subject:date:references
+         :to:in-reply-to:message-id;
+        bh=f5phrF/Y9HZfh2owf2aX3je+k97QtVgi+1DQQkyGaac=;
+        b=z3I8lEQYqQrdDIwGc/jex2pafMnpeCokl8GXeYSlCJIZHJ2SekLmgecHHjeIFkcTHF
+         cnRR9j/DKXlQ+SgB5AS7YT59Swu8isyHCbKUTYkNTAIeCLRWFopPgAmApXzDAciSDNqb
+         FCn9ahFKZrkH2R+0YTH29lAzrPxhwe1RyER+bkbgfuST+MWkkJwjE5dZUzBCAIE5+Yag
+         kVWqU04wAnpT/3W0N/XOSMpNsY/L8UgI52RA/jCJ1bCve6SyiRk15rsWZyDLtCgBx88V
+         3DugW3IS7VBnS2OhNVTgjtMUoHy0xT2nNK04zRLXjnY5gLCmEZBkRwrwlauxR1lA3yMJ
+         Ps/w==
+H??X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:from:content-transfer-encoding:mime-version
+         :subject:date:references:to:in-reply-to:message-id;
+        bh=f5phrF/Y9HZfh2owf2aX3je+k97QtVgi+1DQQkyGaac=;
+        b=GHpSqphFOHg8J2Cqia2ro1F4KQtY8CaENBgxWF0SnwgO+0QJf6XBCb1lbYjgV7mP3q
+         8EhlhbtfY2iHIvBlDRUQJ41CWIIHvj4qbSbseuVOiH8vb85Gx46fhupoSS4iIJ1UuD3i
+         Ub9mCTfiH21zKBcheW9aJfSHQ7/bRYenyZKtYUAyIgIcK7UK4M3oolpgIprR9R6u4vJJ
+         9T43YICA7kOvpF7r+eo0JlDdUvjrwrZlpDHvoRQDwl8kcCV0XsIitKF8Yb67X0Zbw8VI
+         HqEDpktC01DNDM7vfT7uzNPMXF7zj7q3yaaVCP0APdSxlUmfXh5+7Gal5nY5gkXcqnfu
+         pIPA==
+H??X-Gm-Message-State: AA6/9RnUgWsKmywFPdUHWy69HA1d+9TKedr04TvwqRerfF84WGkNRoKIXldUy+vX1fdxsQ==
+H??X-Received: by 10.194.148.99 with SMTP id tr3mr22347424wjb.173.1474913526908;
+        Mon, 26 Sep 2016 11:12:06 -0700 (PDT)
+HReturn-Path: <litleleprikon@gmail.com>
+HReceived: from [10.240.23.110] ([188.130.155.154])
+        by smtp.gmail.com with ESMTPSA id bl3sm23545237wjc.26.2016.09.26.11.12.05
+        for <postmaster@st10.os3.su>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 26 Sep 2016 11:12:06 -0700 (PDT)
+H??From: Emil Sharifullin <litleleprikon@gmail.com>
+H??Content-Type: text/plain; charset=us-ascii
+H??Content-Transfer-Encoding: quoted-printable
+H??Mime-Version: 1.0 (Mac OS X Mail 10.0 \(3226\))
+H??Subject: Re: Helo
+H??Date: Mon, 26 Sep 2016 21:12:05 +0300
+H??References: <EAA44DA4-5204-4CD6-8632-196BAEA6BDC1@gmail.com>
+H??To: postmaster@st10.os3.su
+H??In-Reply-To: <EAA44DA4-5204-4CD6-8632-196BAEA6BDC1@gmail.com>
+H??Message-Id: <EB3AA98E-65B2-4750-8CC3-B08D2E0D6A68@gmail.com>
+H??X-Mailer: Apple Mail (2.3226)
+.
+
+\end{bashcode}
+
+\subsubsection{The email is delivered to your MTA when you turn it back on.}
+When I started my I got following message
+
+\begin{bashcode}
+
+From litleleprikon@gmail.com  Mon Sep 26 18:33:14 2016
+Return-Path: <litleleprikon@gmail.com>
+X-Original-To: postmaster@st10.os3.su
+Delivered-To: postmaster@st10.os3.su
+Received: from st11.os3.su (mail.st11.os3.su [188.130.155.44])
+    by st10.os3.su (Postfix) with ESMTP id CB21E899
+    for <postmaster@st10.os3.su>; Mon, 26 Sep 2016 18:33:14 +0000 (UTC)
+Received: from mail-qk0-f178.google.com (mail-qk0-f178.google.com [209.85.220.178])
+    by st11.os3.su (8.15.2/8.15.2/Debian-3) with ESMTPS id u8QICEod010646
+    (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+    for <postmaster@st10.os3.su>; Mon, 26 Sep 2016 21:12:17 +0300
+Received: by mail-qk0-f178.google.com with SMTP id g67so113687365qkd.0
+        for <postmaster@st10.os3.su>; Mon, 26 Sep 2016 11:12:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20120113;
+        h=from:content-transfer-encoding:mime-version:subject:date:references
+         :to:in-reply-to:message-id;
+        bh=f5phrF/Y9HZfh2owf2aX3je+k97QtVgi+1DQQkyGaac=;
+        b=z3I8lEQYqQrdDIwGc/jex2pafMnpeCokl8GXeYSlCJIZHJ2SekLmgecHHjeIFkcTHF
+         cnRR9j/DKXlQ+SgB5AS7YT59Swu8isyHCbKUTYkNTAIeCLRWFopPgAmApXzDAciSDNqb
+         FCn9ahFKZrkH2R+0YTH29lAzrPxhwe1RyER+bkbgfuST+MWkkJwjE5dZUzBCAIE5+Yag
+         kVWqU04wAnpT/3W0N/XOSMpNsY/L8UgI52RA/jCJ1bCve6SyiRk15rsWZyDLtCgBx88V
+         3DugW3IS7VBnS2OhNVTgjtMUoHy0xT2nNK04zRLXjnY5gLCmEZBkRwrwlauxR1lA3yMJ
+         Ps/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20130820;
+        h=x-gm-message-state:from:content-transfer-encoding:mime-version
+         :subject:date:references:to:in-reply-to:message-id;
+        bh=f5phrF/Y9HZfh2owf2aX3je+k97QtVgi+1DQQkyGaac=;
+        b=GHpSqphFOHg8J2Cqia2ro1F4KQtY8CaENBgxWF0SnwgO+0QJf6XBCb1lbYjgV7mP3q
+         8EhlhbtfY2iHIvBlDRUQJ41CWIIHvj4qbSbseuVOiH8vb85Gx46fhupoSS4iIJ1UuD3i
+         Ub9mCTfiH21zKBcheW9aJfSHQ7/bRYenyZKtYUAyIgIcK7UK4M3oolpgIprR9R6u4vJJ
+         9T43YICA7kOvpF7r+eo0JlDdUvjrwrZlpDHvoRQDwl8kcCV0XsIitKF8Yb67X0Zbw8VI
+         HqEDpktC01DNDM7vfT7uzNPMXF7zj7q3yaaVCP0APdSxlUmfXh5+7Gal5nY5gkXcqnfu
+         pIPA==
+X-Gm-Message-State: AA6/9RnUgWsKmywFPdUHWy69HA1d+9TKedr04TvwqRerfF84WGkNRoKIXldUy+vX1fdxsQ==
+X-Received: by 10.194.148.99 with SMTP id tr3mr22347424wjb.173.1474913526908;
+        Mon, 26 Sep 2016 11:12:06 -0700 (PDT)
+Received: from [10.240.23.110] ([188.130.155.154])
+        by smtp.gmail.com with ESMTPSA id bl3sm23545237wjc.26.2016.09.26.11.12.05
+        for <postmaster@st10.os3.su>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 26 Sep 2016 11:12:06 -0700 (PDT)
+From: Emil Sharifullin <litleleprikon@gmail.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: quoted-printable
+Mime-Version: 1.0 (Mac OS X Mail 10.0 \(3226\))
+Subject: Re: Helo
+Date: Mon, 26 Sep 2016 21:12:05 +0300
+References: <EAA44DA4-5204-4CD6-8632-196BAEA6BDC1@gmail.com>
+To: postmaster@st10.os3.su
+In-Reply-To: <EAA44DA4-5204-4CD6-8632-196BAEA6BDC1@gmail.com>
+Message-Id: <EB3AA98E-65B2-4750-8CC3-B08D2E0D6A68@gmail.com>
+X-Mailer: Apple Mail (2.3226)
+
+This message I sent to my fallen postfix
+> On 26 Sep 2016, at 8:27 PM, Emil Sharifullin <litleleprikon@gmail.com> =
+wrote:
+>=20
+> hello
+
+
+
+\end{bashcode}
+
+\section{Client Access and MTA Internals}
+\addtocounter{subsection}{6}
+\subsection{Choose a console mail client that is available in the Ubuntu repositories, install it and configure it to read mail for the account added before}
+I installed mutt mail client.
+\subsubsection{Where does the client store read emails?}
+Mutt by default store it in /home/user/mail/received
+
+\subsubsection{In what format?}
+By deafult mutt store all mesages in MBOX format. An mbox folder is a plain text file. Each message starts with a "From " line (note the trailing space).
+
+\subsection{Briefly explain}
+\subsubsection{What mail queues your mail server uses?}
+Postfix uses sendmail's mail queue.
+\subsubsection{What is their purpose?}
+MTA sends all incoming mails to queue and with this queue can work huge variety of other software for example spam filters.
+\subsubsection{Where are they located on your machine?}
+At my machine mail queue is located at /var/spool/postfix/
+\subsubsection{How can you interact with them?}
+Postfix gets you postqueue-tool that allows you to interract with message queue, but also you can work with mailq. Postqueue allows you to:
+
+\begin{itemize}
+    \item Flush the queue
+    \item Produce a queue listing in JSON format
+    \item Produce a traditional sendmail-style queue listing
+    \item Schedule immediate delivery of all mail that is queued  for  the named  site
+\end{itemize}
 
 \end{document}
