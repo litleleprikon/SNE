@@ -1,0 +1,7 @@
+; This is a key-signing key, keyid 50107, for st10.os3.su.
+; Created: 20160928140204 (Wed Sep 28 17:02:04 2016)
+; Publish: 20160928140204 (Wed Sep 28 17:02:04 2016)
+; Activate: 20160928140204 (Wed Sep 28 17:02:04 2016)
+trusted-keys {
+	st10.os3.su. 257 3 8 "AwEAAdJX7HL5U2Ucw3vXZIuj2deer2QI2EV7Xj2E02k1A8J3wDvzvM1C 9hxzQ12TlU+Qfz6lhyCZHy9PsUvdTHOH1kP6sblSbAuzMxbW3Ijyqgks G0ClktSdXWVy2bREvMcc6eVbV6PW04HJ7NT0lIUHhog8a87hw5JRnZzW 0/jf/0jtcj53obM1ghWcglXDgCixRNBYDRN+Jp00nhOtSkXz1V9lwNCI SFKFnQFVRptZQ+03EIUNiFTW5lTVpRb1UulU8DbgIIoyNXestfyfLSnw eKiPeCTRhbrG/WYR1c332nzdoKWNh3jy/JNbaOg8dhkL54NnspFOjKAf q5xB1CJtDaE=";
+};
