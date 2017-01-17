@@ -1,0 +1,201 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{minted}
+\usepackage{xcolor}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue]{hyperref}
+
+\geometry{total={210mm,297mm},
+left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+
+\graphicspath{ {./images/} }
+\renewcommand{\thesubsubsection}{\thesubsection.\alph{subsubsection}}
+\renewcommand*\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+
+% \renewcommand{\thesubsubsection}{\thesubsection.\alph{subsubsection}}
+
+% \newmintedfile{html}{
+%     linenos,
+%     breaklines,
+%     python3,
+%     numbersep=8pt,
+%     frame=single,
+%     framesep=3mm} 
+
+\newcommand*{\TitleFont}{%
+      \usefont{\encodingdefault}{\rmdefault}{b}{n}%
+      \fontsize{16}{20}%
+      \selectfont}
+
+\linespread{1.3}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace{2ex}
+{\huge \textsc{\@title}}
+\vspace{1ex}
+\\
+\rule{\linewidth}{0.5pt}\\
+\@author \hfill \@date
+\vspace{4ex}
+\end{center}
+}
+\makeatother
+
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
+
+% custom footers and headers
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{Assignment 4 : Version control systems/Latex }
+\cfoot{}
+\rfoot{Page \thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+%%----------%%%----------%%%----------%%%----------%%%
+
+\begin{document}
+
+
+\newmintedfile{tex}{
+    linenos,
+    breaklines,
+    numbersep=8pt,
+    frame=single,
+    % bgcolor=bg,
+    framesep=3mm} 
+
+\newmintedfile{make}{
+    linenos,
+    breaklines,
+    numbersep=8pt,
+    frame=single,
+    % bgcolor=bg,
+    framesep=3mm} 
+
+\newminted{bash}{fontsize=\scriptsize, 
+    linenos,
+    python3,
+    numbersep=8pt,
+    frame=single,
+    bgcolor=bg,
+    framesep=3mm}
+
+
+% \newminted{all}{linenos, frame=single}
+
+% \usemintedstyle{monokai}
+\usemintedstyle{manni}
+% \usemintedstyle{xcode}
+% \usemintedstyle{vs}
+% \usemintedstyle{autumn}
+% \usemintedstyle{colorful}
+% \usemintedstyle{trac}
+
+
+\title{ \TitleFont Assignment 4 : Version control systems/Latex }
+
+\author{Emil Sharifulllin, Innopolis University}
+
+\date{\today}
+
+\maketitle
+
+\tableofcontents
+
+\section{LaTeX report}
+As my part of work I created file st10.tex and in this file I talked about REST API.
+
+\texfile{./es4/st10.tex}
+
+And I also added this lines to bib file
+
+\begin{bashcode*}{label=team1.bib}
+@article{wiki-rest,
+title = {REST-API},
+journal = {Wikipedia REST API, "\url{https://en.wikipedia.org/wiki/Representational_state_transfer}",},
+year = 2016,
+}
+\end{bashcode*}
+
+\section{Makefile}
+
+In our group we created following Makefile
+\makefile{./es4/Makefile}
+
+To make this file you need to type
+\begin{bashcode}
+$ make
+\end{bashcode}
+
+\section{Git repo}
+We created git repository with this sequence of actions:
+
+\begin{enumerate}
+    \item Create Git repository (created on st1.os3.su)
+    \item Initialize git repository on local machines (git init)
+    \item Create .gitignore file for saving some space from temporary unneeded files:
+    \begin{bashcode}
+    build/
+    *.pdf
+    *.aux
+    *.log
+    *.out
+    *.bbl
+    *.blg
+    *.lof
+    *.synctex.gz
+    *.toc
+    es4/
+    .DS_Store
+    *.lot
+    *.fdb_latexmk
+    *.fls
+    *.swp
+    _minted*/
+    \end{bashcode}
+    \item For future convenience create keypair in order to have an ability to connect to git server via ssh (ssh-keygen command).
+    \item Send public key to the server 
+    \item Create ~/.ssh/config file with contents:
+    \begin{bashcode}
+    Host bogdan
+     HostName 188.130.155.34
+     Port 10022
+     User git
+     IdentityFile ~/.ssh/id_rsa
+    \end{bashcode}
+    
+\end{enumerate}
+
+And you can check this repo with typing:
+
+\begin{bashcode}
+$ git clone ssh://git@188.130.155.34:10022/home/git/es4
+\end{bashcode}
+Password: hiazathereisyourpassword\\
+
+To work with repo I used this commands:
+
+\begin{bashcode}
+$ git clone git@bogdan:/home/git/es4
+$ git status
+$ git add postman.png st10.tex team1.*
+$ git commit -m "Emil done his work"
+$ git pull
+$ git push
+\end{bashcode}
+
+\end{document}

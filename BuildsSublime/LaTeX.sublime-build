@@ -2,6 +2,12 @@
     "selector": "text.tex.latex",
 
     "variants": [
+        { "name": "Build Project",
+          "shell_cmd": "pdflatex -shell-escape $file_path/main.tex"
+        },
+        { "name": "Run Project",
+          "shell_cmd": "pdflatex -shell-escape $file_path/main.tex && open $file_path/main.pdf"
+        },
         { "name": "Build",
           "shell_cmd": "pdflatex -shell-escape $file"
         },

@@ -7,11 +7,17 @@
 \usepackage{minted}
 \usepackage{xcolor}
 \usepackage{listings}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue]{hyperref}
 
 \geometry{total={210mm,297mm},
 left=25mm,right=25mm,%
 bindingoffset=0mm, top=20mm,bottom=20mm}
 
+\graphicspath{ {./images/} }
+\renewcommand{\thesubsubsection}{\thesubsection.\alph{subsubsection}}
 \renewcommand*\sfdefault{phv}
 \renewcommand\familydefault{\sfdefault}
 
@@ -92,6 +98,7 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \date{\today}
 
 \maketitle
+\tableofcontents
 
 \begin{pythoncode}
 main():

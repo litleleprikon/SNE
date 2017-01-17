@@ -65,9 +65,9 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 \newmintedfile{html}{
     linenos,
     breaklines,
-    python3,
     numbersep=8pt,
     frame=single,
+    % bgcolor=bg,
     framesep=3mm} 
 
 
@@ -96,10 +96,13 @@ URI’s in a html file. (hrefs ...)}
 
 For this purposes I created following regular expression: \\
 
-% \verb/^[\+]?([\d]{1,3}[\s\-])?([\(]{1}[\d]{1,6}[\)])?([\d\s\-\/]{3,20})((x|ext)[\s]?[\d]{1,4})?/
+% \verb/[\+]?([0-9]{1,3}[ \-])?([\(]{1}[0-9]{1,6}[\)])?([0-9 \-\/]{3,20})((x|ext)[\s]?[0-9]{1,4})?/
 
-\textless{}[\textbackslash{}w \textbackslash{}d"\textbackslash{}']+?(?:href$|$codebase$|$cite$|$src$|$background$|$action$|$longdesc$|$src$|$profile$|$usemap$|$\\classid$|$formaction$|$icon$|$manifest$|$poster)=["\textbackslash{}']?[\textbackslash{}d\textbackslash{}w\#:/]+?["\textbackslash{}']?.+?\textgreater{}
+% \textless{}[\textbackslash{}w \textbackslash{}d"\textbackslash{}']+?(?:href$|$codebase$|$cite$|$src$|$background$|$action$|$longdesc$|$src$|$profile$|$usemap$|$\\classid$|$formaction$|$icon$|$manifest$|$poster)=["\textbackslash{}']?[\textbackslash{}d\textbackslash{}w\#:/]+?["\textbackslash{}']?.+?\textgreater{}
 
+\begin{bashcode}
+<[^>]+(:?href|codebase|cite|src|background|action|longdesc|src|profile| usemap|classid|formaction|icon|manifest|poster).* 
+\end{bashcode}
 
 
 
@@ -111,7 +114,8 @@ wget www.csszengarden.com
 
 \subsection{Use grep –E}
 \begin{bashcode}
-cat index.html | grep -E "<[^ >]+?(:? href|codebase|cite|src|background|action|longdesc|src |profile|usemap|classid|formaction|icon|manifest|poster).*"
+cat index . html | grep -Ei "<[^>]+(:?href|codebase|cite|src|background|action|longdesc|src| profile|usemap| classid|formaction|icon|manifest|poster).* "
+
 \end{bashcode}
 
 \subsection{Parsing www.csszengarden.com}
@@ -121,10 +125,68 @@ Results of parsing:
 \htmlfile{./res.grep}
 
 \section{Dutch telephone numbers}
-For matching telephone numbers I designed following regular expression:\\
+For matching telephone numbers I designed following regular expression:
+\begin{bashcode}
+(((\+[ ]?|00[ ]?)?(31[ ]?20[ ]?))|([(]?020[)]?[ ]?))(([0-9][ ]?){7})
+\end{bashcode}
 
-[\textbackslash{}+]?([\textbackslash{}d]\{1,3\}[\textbackslash{}s\textbackslash{}-])?([\textbackslash{}(]\{1\}[\textbackslash{}d]\{1,6\}[\textbackslash{})])?([\textbackslash{}d\textbackslash{}s\textbackslash{}-\textbackslash{}/]\{3,20\})((x$|$ext)[\textbackslash{}s]?[\textbackslash{}d]\{1,4\})?
+\begin{bashcode}
+$ cat numbers
++31205257414
+31205257414
+0205257514
+0031205257514
++31 20 525 7514
+00 31 525 75 14
+(020) 525 75 14
+\end{bashcode}
 
-\
+\begin{bashcode}
+$ cat numbers | grep -E '(((\+[ ]?|00[ ]?)?(31[ ]?20[ ]?))|([(]?020[)]?[ ]?))(([0-9][ ]?){7})'
++31205257414
+31205257414
+0205257514
+0031205257514
++31 20 525 7514
+00 31 20 525 75 14
+(020) 525 75 14
+\end{bashcode}
+
+\section{Create a regexp to match VISA card correctly.}
+To match VISA cards I created following regexp:
+\begin{bashcode}
+^4[0-9]{3}[ \-]?(:?[0-9]{4}[ \-]?){2}([0-9]{1}|[0-9]{4})([ \-]?[0-9]{3})?$
+\end{bashcode}
+VISA cards can contain 13, 16, 19 symbols and only VISA card can start with 4.
+
+\begin{bashcode}
+$ cat cards
+4024 0071 4424 7433
+4024007144247433
+4024007144247433123
+4024 0071 4424 7433 123
+4716357221230
+4716-3572-2123-0
+4175000226933423
+4175-0002-2693-3423
+$ cat cards | grep -E '^4[0-9]{3}[ \-]?(:?[0-9]{4}[ \-]?){2}([0-9]{1}|[0-9]{4})([ \-]?[0-9]{3})?$'
+4024 0071 4424 7433
+4024007144247433
+4024007144247433123
+4024 0071 4424 7433 123
+4716357221230
+4716-3572-2123-0
+4175000226933423
+4175-0002-2693-3423
+\end{bashcode}
+
+\section{Create a regular expression using grep that removes all lines containing only comments from a bash script file (with your example)}
+To remove all comments except shebang I used this command
+
+\begin{bashcode}
+$ echo -e $(head -1 test.sh | grep -Ev "#[^\!]")'\n'$(tail -n +2 test.sh | grep -v "^[:space:]*#.*$")
+#!/bin/bash
+ echo "hello world" # comment
+\end{bashcode}
 
 \end{document}

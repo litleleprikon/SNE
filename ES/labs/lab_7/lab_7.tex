@@ -1,0 +1,443 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{minted}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue]{hyperref}
+
+\geometry{total={210mm,297mm},
+left=25mm,right=25mm,%
+bindingoffset=0mm, top=20mm,bottom=20mm}
+
+\graphicspath{ {./images/} }
+% \renewcommand{\thesubsection}{\thesubsection.\alph{subsection}}
+\renewcommand*\sfdefault{phv}
+\renewcommand\familydefault{\sfdefault}
+
+% \renewcommand{\thesubsection}{\thesubsection.\alph{subsection}}
+
+% \newmintedfile{html}{
+%     linenos,
+%     breaklines,
+%     python3,
+%     numbersep=8pt,
+%     frame=single,
+%     framesep=3mm} 
+
+\newcommand*{\TitleFont}{%
+      \usefont{\encodingdefault}{\rmdefault}{b}{n}%
+      \fontsize{16}{20}%
+      \selectfont}
+
+\linespread{1.3}
+
+% my own titles
+\makeatletter
+\renewcommand{\maketitle}{
+\begin{center}
+\vspace{2ex}
+{\huge \textsc{\@title}}
+\vspace{1ex}
+\\
+\rule{\linewidth}{0.5pt}\\
+\@author \hfill \@date
+\vspace{4ex}
+\end{center}
+}
+\makeatother
+
+\definecolor{bg}{rgb}{0.95,0.95,0.95}
+
+
+% custom footers and headers
+\pagestyle{fancy}
+\lhead{}
+\chead{}
+\rhead{}
+\lfoot{Assignment 7 : Operating Systems }
+\cfoot{}
+\rfoot{Page \thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+%%----------%%%----------%%%----------%%%----------%%%
+
+\begin{document}
+
+\newminted{bash}{fontsize=\scriptsize, 
+    linenos,
+    numbersep=8pt,
+    frame=single,
+    bgcolor=bg,
+    framesep=3mm} 
+
+
+
+% \newminted{all}{linenos, frame=single}
+
+% \usemintedstyle{monokai}
+\usemintedstyle{manni}
+% \usemintedstyle{xcode}
+% \usemintedstyle{vs}
+% \usemintedstyle{autumn}
+% \usemintedstyle{colorful}
+% \usemintedstyle{trac}
+
+
+\title{ \TitleFont Assignment 7 : Operating Systems }
+
+\author{Emil Sharifulllin, Innopolis University}
+
+\date{\today}
+
+\maketitle
+\tableofcontents
+
+\section{Basic}
+\subsection{Find a way to get the name of the host?}
+You can get hostname with hostname command.
+
+\begin{bashcode}
+$ hostname
+Emils-MacBook-Pro.local
+\end{bashcode}
+\subsection{Find a way to change the time zone manually?}
+In Ubuntu you can set timezone with timedatectl
+\begin{bashcode}
+$ sudo timedatectl set-timezone America/New_York
+\end{bashcode}
+\subsection{Specify hostnames for an IP address once on the local machine, and then have multiple applications connect to external resources via their hostnames?}
+Many of operating systems have hosts file. In this file you can specify symbolic hostnames for ip addresses.
+
+\begin{bashcode}
+$ sudo echo '127.0.0.1 localhost' > /etc/hosts
+\end{bashcode}
+
+\section{Network Diagnostics}
+\subsection{Test the connection between the local machine and a remote address or machine?}
+For this case you can use ping command. Ping uses ICMP protocol if in any purposes you cannot use ICMP based tools you can also use nmap.
+
+\begin{bashcode}
+$ ping -c 4 google.com
+PING google.com (74.125.232.225): 56 data bytes
+64 bytes from 74.125.232.225: icmp_seq=0 ttl=53 time=27.128 ms
+64 bytes from 74.125.232.225: icmp_seq=1 ttl=53 time=27.862 ms
+64 bytes from 74.125.232.225: icmp_seq=2 ttl=53 time=28.254 ms
+64 bytes from 74.125.232.225: icmp_seq=3 ttl=53 time=28.349 ms
+
+--- google.com ping statistics ---
+4 packets transmitted, 4 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 27.128/27.898/28.349/0.481 ms
+
+$ sudo nmap -sP st10.os3.su
+
+Starting Nmap 7.01 ( https://nmap.org ) at 2016-10-04 14:34 MSK
+Nmap scan report for st10.os3.su (188.130.155.43)
+Host is up.
+rDNS record for 188.130.155.43: mail.st10.os3.su
+Nmap done: 1 IP address (1 host up) scanned in 1.46 seconds
+
+\end{bashcode}
+
+\subsection{Provide a report on the path that the packets take to get from the local machine to the remote machine?}
+With traceroute program you can see how packets travels during network between you host and remote host.
+\begin{bashcode}
+$ traceroute google.com
+traceroute: Warning: google.com has multiple addresses; using 173.194.32.142
+traceroute to google.com (173.194.32.142), 65 hops max, 52 byte packets
+ 1  10.240.16.1 (10.240.16.1)  11.613 ms  1.371 ms  2.119 ms
+ 2  10.250.0.1 (10.250.0.1)  1.436 ms  2.290 ms  1.296 ms
+ 3  37.29.99.73 (37.29.99.73)  4.398 ms  4.852 ms  3.876 ms
+ 4  192.168.129.1 (192.168.129.1)  11.707 ms  13.111 ms  11.768 ms
+ 5  10.8.191.26 (10.8.191.26)  16.262 ms  10.993 ms  13.665 ms
+ 6  10.222.63.224 (10.222.63.224)  22.955 ms  21.779 ms  23.530 ms
+ 7  10.222.177.165 (10.222.177.165)  22.666 ms  22.903 ms
+    10.222.177.161 (10.222.177.161)  22.929 ms
+ 8  83.169.204.38 (83.169.204.38)  21.193 ms  27.032 ms  21.195 ms
+ 9  37.29.3.250 (37.29.3.250)  22.798 ms  27.837 ms
+    72.14.222.181 (72.14.222.181)  22.560 ms
+10  209.85.240.213 (209.85.240.213)  31.687 ms  23.330 ms
+    209.85.251.4 (209.85.251.4)  22.888 ms
+11  72.14.236.242 (72.14.236.242)  27.731 ms  28.910 ms  41.950 ms
+12  173.194.32.142 (173.194.32.142)  29.395 ms  22.604 ms  22.485 ms
+\end{bashcode}
+\subsection{Get information about the route that Internet traffic takes between the local system and a remote host?}
+To get all routes in Ubuntu you can use route command.
+
+\begin{bashcode}
+$ route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         188.130.155.33  0.0.0.0         UG    100    0        0 eno1
+link-local      *               255.255.0.0     U     1000   0        0 eno1
+172.17.0.0      *               255.255.0.0     U     0      0        0 docker0
+188.130.155.32  *               255.255.255.224 U     100    0        0 eno1
+\end{bashcode}
+\subsection{Track the speed of the connection in real time?}
+I use ifstat program to capture network usage.
+
+\begin{bashcode}
+$ ifstat -q
+       eno1              docker0           veth1246cae    
+ KB/s in  KB/s out   KB/s in  KB/s out   KB/s in  KB/s out
+    0.07      0.22      0.00      0.00      0.00      0.00
+    0.07      0.17      0.00      0.00      0.00      0.00
+    0.07      0.17      0.00      0.00      0.00      0.00
+    0.07      0.17      0.00      0.00      0.00      0.00
+    0.07      0.17      0.00      0.00      0.00      0.00
+    0.07      0.17      0.00      0.00      0.00      0.00
+    1.82      1.38      0.00      0.00      0.00      0.00
+    0.07      0.17      0.00      0.00      0.00      0.00
+    0.13      0.17      0.00      0.00      0.00      0.00
+    0.13      0.17      0.00      0.00      0.00      0.00
+\end{bashcode}
+
+\section{System Diagnostics}
+All realtime information about system can be found in /proc/ folder as a files.
+\subsection{Find out how much memory your system is using at a given moment?}
+Command free can solve this.
+
+\begin{bashcode}
+$ free -h
+
+              total        used        free      shared  buff/cache   available
+Mem:           7.7G        2.3G        2.0G        122M        3.4G        4.9G
+Swap:          7.9G          0B        7.9G
+\end{bashcode}
+
+But also you can cat /proc/meminfo file
+
+\begin{bashcode}
+$ cat /proc/meminfo
+MemTotal:        8079628 kB
+MemFree:         1933428 kB
+MemAvailable:    5091572 kB
+Buffers:          420192 kB
+Cached:          2836184 kB
+SwapCached:            0 kB
+Active:          3798868 kB
+Inactive:        1801044 kB
+Active(anon):    2349276 kB
+Inactive(anon):   119352 kB
+Active(file):    1449592 kB
+Inactive(file):  1681692 kB
+Unevictable:          32 kB
+Mlocked:              32 kB
+SwapTotal:       8292348 kB
+SwapFree:        8292348 kB
+Dirty:                80 kB
+Writeback:             0 kB
+AnonPages:       2343584 kB
+Mapped:           440460 kB
+Shmem:            125096 kB
+Slab:             378612 kB
+SReclaimable:     331712 kB
+SUnreclaim:        46900 kB
+KernelStack:       10128 kB
+PageTables:        38268 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:    12332160 kB
+Committed_AS:    6501864 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:           0 kB
+VmallocChunk:          0 kB
+HardwareCorrupted:     0 kB
+AnonHugePages:   1587200 kB
+CmaTotal:              0 kB
+CmaFree:               0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+DirectMap4k:      189104 kB
+DirectMap2M:     6006784 kB
+DirectMap1G:     2097152 kB
+\end{bashcode}
+\subsection{Collect information about memory; swap utilization, IO wait, and system activity?}
+I use free, vmstat, iostat
+\begin{bashcode}
+$ vmstat
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 1  0      0 1906812 420604 3218472    0    0     1     6   14    1  0  0 100  0  0
+\end{bashcode}
+\begin{bashcode}
+$ iostat
+Linux 4.4.0-38-generic (sne-litleleprikon)  04.10.2016  _x86_64_  (4 CPU)
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           0,21    0,01    0,12    0,11    0,00   99,54
+
+Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+sda               1,07         4,60        25,01    1858436   10095525
+\end{bashcode}
+\begin{bashcode}
+$ free -h
+              total        used        free      shared  buff/cache   available
+Mem:           7.7G        2.4G        1.8G        122M        3.5G        4.8G
+Swap:          7.9G          0B        7.9G
+\end{bashcode}
+
+\subsection{How to get real-time view of the current state of your system?}
+Built-in program for this purposes is top
+
+\begin{bashcode}
+$ Processes: 340 total, 2 running, 338 sleeping, 1784 threads                      15:30:56
+Load Avg: 1.74, 1.76, 1.88  CPU usage: 4.57% user, 5.78% sys, 89.63% idle
+SharedLibs: 205M resident, 45M data, 44M linkedit.
+MemRegions: 77231 total, 2166M resident, 86M private, 727M shared.
+PhysMem: 8042M used (2277M wired), 148M unused.
+VM: 969G vsize, 612M framework vsize, 257451(0) swapins, 625776(0) swapouts.
+Networks: packets: 3347878/3353M in, 2318214/431M out.
+Disks: 2002179/23G read, 815654/20G written.
+
+PID    COMMAND      %CPU TIME     #TH   #WQ  #PORT MEM    PURG   CMPRS  PGRP  PPID
+90700  ocspd        0.0  00:02.31 3     1    45    1180K  0B     1280K  90700 1
+87148  mdworker     0.0  00:02.33 5     2    56    7344K  0B     10M    87148 1
+...
+\end{bashcode}
+
+\section{File System Management}
+\subsection{Find out a secure way to upload and download files from a remote server?}
+The most secure way to get access to files on remote host is via ssh. I use scp tool that works with scp protocol over ssh.
+
+\begin{bashcode}
+$ scp litleleprikon@st10.os3.su:~/test.txt ./
+\end{bashcode}
+
+\subsection{How can you provide users and applications access to specific files and directories without reorganizing your folders?}
+In linux file systems use permissions and attributes to regulate the level of interaction that system processes can have with files and directories. To get access to file you can use chown or chmod.
+
+\subsection{How to Know What Packages are Installed on Your System?}
+\begin{bashcode}
+$ dpkg --get-selections | grep -v deinstall
+$ apt list --installed
+\end{bashcode}
+\subsection{How to Discover Package Names and Information?}
+\begin{bashcode}
+$ apt search package-name
+\end{bashcode}
+\subsection{Strace}
+\subsubsection{Which config files a program reads on startup}
+Usually config files is opened with readonly access rights so I used this command.
+\begin{bashcode}
+$ strace wget google.com |& grep open | grep O_RDONLY
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libpcre.so.3", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libuuid.so.1", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libssl.so.1.0.0", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libcrypto.so.1.0.0", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libz.so.1", O_RDONLY|O_CLOEXEC) = 3
+open("/usr/lib/x86_64-linux-gnu/libidn.so.11", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libpthread.so.0", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libdl.so.2", O_RDONLY|O_CLOEXEC) = 3
+open("/usr/lib/locale/locale-archive", O_RDONLY|O_CLOEXEC) = 3
+open("/usr/share/locale/locale.alias", O_RDONLY|O_CLOEXEC) = 3
+open("/usr/lib/locale/UTF-8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+open("/usr/share/locale-langpack/UTF-8/LC_CTYPE", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+open("/etc/wgetrc", O_RDONLY)           = 3
+open("/usr/lib/x86_64-linux-gnu/gconv/gconv-modules.cache", O_RDONLY) = 3
+open("/etc/localtime", O_RDONLY|O_CLOEXEC) = 3
+open("/etc/nsswitch.conf", O_RDONLY|O_CLOEXEC) = 3
+open("/etc/host.conf", O_RDONLY|O_CLOEXEC) = 3
+open("/etc/resolv.conf", O_RDONLY|O_CLOEXEC) = 3
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libnss_files.so.2", O_RDONLY|O_CLOEXEC) = 3
+open("/etc/hosts", O_RDONLY|O_CLOEXEC)  = 3
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libnss_mdns4_minimal.so.2", O_RDONLY|O_CLOEXEC) = 3
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libnss_dns.so.2", O_RDONLY|O_CLOEXEC) = 3
+open("/lib/x86_64-linux-gnu/libresolv.so.2", O_RDONLY|O_CLOEXEC) = 3
+open("/etc/resolv.conf", O_RDONLY|O_CLOEXEC) = 3
+open("/etc/gai.conf", O_RDONLY|O_CLOEXEC) = 3
+open("/etc/hosts", O_RDONLY|O_CLOEXEC)  = 4
+open("/usr/lib/charset.alias", O_RDONLY|O_NOFOLLOW) = -1 ENOENT (No such file or directory)
+\end{bashcode}
+\subsubsection{Where a given Linux process spends most of its execution time? You can try a number of command like “ls”}
+\begin{bashcode}
+$ strace -c ls
+Desktop          Kst10.st11.os3.su.+008+08964.key      Kst10.st11.os3.su.+008+22531.key    Mail      SNE  dig   Yandex.Disk  _minted-template   cgames      gnu-conquest-1.03     inspirussia  plot.svg       potfix-dkim-1.tar.gz  template.log  test.py
+Documents        Kst10.st11.os3.su.+008+08964.private  Kst10.st11.os3.su.+008+22531.private  Music     TROG _minted-minimal  brogue-1.7.4     cnibbles    gnu-conquest-1.03.tar.gz  journal  postfix        potfix-dkim.tar.gz    template.lol  texmf
+Downloads        Kst10.st11.os3.su.+008+18631.key      Kst10.st11.os3.su.+008+64806.key    Pictures  Templates  _minted-mint   brogue-1.7.4-linux-amd64.tbz2  examples.desktop  index.html        mail   postfix-configured.tar.gz  shared_files    template.pdf
+Firefox_wallpaper.png  Kst10.st11.os3.su.+008+18631.private  Kst10.st11.os3.su.+008+64806.private  Public    Videos _minted-minted   cNibbles-2.0.1.tbz   gdrive      index.html.1        mypipe   postfix.tar        template.aux    template.tex
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+  0.00    0.000000           0         9           read
+  0.00    0.000000           0         4           write
+  0.00    0.000000           0        12         2 open
+  0.00    0.000000           0        12           close
+  0.00    0.000000           0        11           fstat
+  0.00    0.000000           0        19           mmap
+  0.00    0.000000           0        12           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         3           brk
+  0.00    0.000000           0         2           rt_sigaction
+  0.00    0.000000           0         1           rt_sigprocmask
+  0.00    0.000000           0         2           ioctl
+  0.00    0.000000           0         7         7 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         2           getdents
+  0.00    0.000000           0         1           getrlimit
+  0.00    0.000000           0         2         2 statfs
+  0.00    0.000000           0         1           arch_prctl
+  0.00    0.000000           0         1           set_tid_address
+  0.00    0.000000           0         1           set_robust_list
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000000                   104        11 total
+\end{bashcode}
+
+\subsubsection{Why a given process cannot connect to remote servers?}
+\begin{bashcode}
+$ strace  nc google.com 80 |& grep -E 'poll|select|connect|recvfrom|sendto'
+connect(3, {sa_family=AF_LOCAL, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+connect(3, {sa_family=AF_LOCAL, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+connect(3, {sa_family=AF_LOCAL, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+connect(3, {sa_family=AF_LOCAL, sun_path="/var/run/nscd/socket"}, 110) = -1 ENOENT (No such file or directory)
+connect(3, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("127.0.1.1")}, 16) = 0
+poll([{fd=3, events=POLLOUT}], 1, 0)    = 1 ([{fd=3, revents=POLLOUT}])
+poll([{fd=3, events=POLLIN}], 1, 5000)  = 1 ([{fd=3, revents=POLLIN}])
+recvfrom(3, "IV\201\200\0\1\0\1\0\4\0\4\6google\3com\0\0\34\0\1\300\f\0\34"..., 2048, 0, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("127.0.1.1")}, [16]) = 192
+poll([{fd=3, events=POLLIN}], 1, 4967)  = 1 ([{fd=3, revents=POLLIN}])
+recvfrom(3, "i\273\201\200\0\1\0\f\0\4\0\4\6google\3com\0\0\1\0\1\300\f\0\1"..., 65536, 0, {sa_family=AF_INET, sin_port=htons(53), sin_addr=inet_addr("127.0.1.1")}, [16]) = 356
+sendto(3, "\24\0\0\0\26\0\1\0030\334\363W\0\0\0\0\0\0\0\0", 20, 0, {sa_family=AF_NETLINK, pid=0, groups=00000000}, 12) = 20
+connect(3, {sa_family=AF_INET6, sin6_port=htons(80), inet_pton(AF_INET6, "2a00:1450:4010:c07::71", &sin6_addr), sin6_flowinfo=0, sin6_scope_id=0}, 28) = -1 ENETUNREACH (Network is unreachable)
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.249")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.245")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.248")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.242")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.250")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.246")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.240")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.243")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.241")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.244")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.247")}, 16) = 0
+connect(3, {sa_family=AF_UNSPEC, sa_data="\0\0\0\0\0\0\0\0\0\0\0\0\0\0"}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.251")}, 16) = 0
+connect(3, {sa_family=AF_INET, sin_port=htons(80), sin_addr=inet_addr("83.169.197.249")}, 16) = -1 EINPROGRESS (Operation now in progress)
+select(4, NULL, [3], NULL, NULL)        = 1 (out [3])
+\end{bashcode}
+
+\end{document}

@@ -106,16 +106,43 @@ bindingoffset=0mm, top=20mm,bottom=20mm}
 
 \maketitle
 
+\tableofcontents
+
 \section{Assignment 1}
 
 \subsection{Debian packaging system}
 The main Debian package management tool is \textbf{dpkg}. Dpkg is a program that allows users to install remove and configure packages. dpkg needs *.deb files which is special archives, containing binary executables, configuration files, man/info pages, copyright information, and other documentation. Debian systems also contain \textbf{apt}-Advanced Packaging Tool is a high-level tool that uses dpkg under itself. APT have repositories of .deb packages and there is not need to download .deb files manually.
 
 \subsubsection{How does it work?}
-dpkg checks package for dependencies and if system doesn't contain certain dependency dpkg stops installation with error. Then it extracts files from .deb file, run preistall scripts, move binaries to system folder, run postinstall script. Last step is to add record to it's own registry, that in this system installed certain package.\\\\
+dpkg checks package for dependencies and if system doesn't contain certain dependency dpkg stops installation with error. Then it extracts files from .deb file, run preistall scripts, move binaries to system folder, run postinstall script. Last step is to add record to it's own registry, that in this system installed certain package. \hl{dpkg have two kinds of packages: binary and source. Both is an ar archives with data. Binary packages is a .deb files which usually contains executable files, libraries, and documentation associated with this certain package. Source packages usually contains .orig.tar.gz file with sources and .diff.gz file with debian-specific changes.}\\\\
 apt is a tool that can automatically download .deb file, download dependencies .deb files. Then apt install package using dpkg.
 
 \subsubsection{How does it deal with dependencies?}
+\hl{Every debian package can be dependent on other packages. This dependencies listed in \textbf{control} file. Control file contains information about package name, version, author, architecture and dependencies. Here you can see example of control file:}
+
+\begin{bashcode}
+Package: hello
+Version: 2.9-2+deb8u1
+Architecture: amd64
+Maintainer: Santiago Vila <sanvila@debian.org>
+Installed-Size: 145
+Depends: libc6 (>= 2.14)
+Conflicts: hello-traditional
+Breaks: hello-debhelper (<< 2.9)
+Replaces: hello-debhelper (<< 2.9), hello-traditional
+Section: devel
+Priority: optional
+Homepage: http://www.gnu.org/software/hello/
+Description: example package based on GNU hello
+  The GNU hello program produces a familiar, friendly greeting.  It
+  allows non-programmers to use a classic computer science tool which
+  would otherwise be unavailable to them.
+  .
+  Seriously, though: this is an example of how to do a Debian package.
+  It is the Debian version of the GNU Project's `hello world' program
+  (which is itself an example for the GNU Project).
+\end{bashcode}
+
 dpkg cannot install missing dependencies if dependency is not installed on system dpkg fails with installation. apt downloads and installs dependencies before install package. dpkg supports following types of dependencies:
 
 \begin{itemize}
@@ -130,7 +157,7 @@ dpkg cannot install missing dependencies if dependency is not installed on syste
 \end{itemize}
 
 \subsubsection{Does it use the GNU build tools? How? If not what does it use?}
-dpkg don't use build tools to install package because packages spreads as a .deb files which contains already built binaries. But dpkg uses build tools to create deb files for example in dpkg-buildpackage script. 
+In general dpkg don't use build tools to install package because packages spreads as a .deb files which contains already built binaries. But dpkg uses build tools to create deb files for example in dpkg-buildpackage script. \hl{dpkg also uses debian build tools to build and install package from sources. The autors of source package can add additional information about packages using to build theirs package from sources. This information is called build-dependencies.}
 
 \subsection{Open SUSE packaging system}
 

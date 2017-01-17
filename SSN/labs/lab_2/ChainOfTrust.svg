@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="685px" height="829px" viewBox="0 0 685 829" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 40 (33762) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 7</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="685" height="829"></rect>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="685" height="829" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <rect id="path-3" x="0" y="0" width="270" height="100"></rect>
+        <mask id="mask-4" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="270" height="100" fill="white">
+            <use xlink:href="#path-3"></use>
+        </mask>
+        <rect id="path-5" x="0" y="0" width="270" height="189"></rect>
+        <mask id="mask-6" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="270" height="189" fill="white">
+            <use xlink:href="#path-5"></use>
+        </mask>
+        <rect id="path-7" x="0" y="0" width="270" height="117"></rect>
+        <mask id="mask-8" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="270" height="117" fill="white">
+            <use xlink:href="#path-7"></use>
+        </mask>
+        <rect id="path-9" x="10" y="42" width="250" height="28"></rect>
+        <mask id="mask-10" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="250" height="28" fill="white">
+            <use xlink:href="#path-9"></use>
+        </mask>
+        <rect id="path-11" x="0" y="0" width="217" height="99"></rect>
+        <mask id="mask-12" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="217" height="99" fill="white">
+            <use xlink:href="#path-11"></use>
+        </mask>
+        <rect id="path-13" x="0" y="0" width="217" height="117"></rect>
+        <mask id="mask-14" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="217" height="117" fill="white">
+            <use xlink:href="#path-13"></use>
+        </mask>
+        <rect id="path-15" x="0" y="0" width="217" height="117"></rect>
+        <mask id="mask-16" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="217" height="117" fill="white">
+            <use xlink:href="#path-15"></use>
+        </mask>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group-7">
+            <use id="Rectangle-4" stroke="#979797" mask="url(#mask-2)" stroke-width="2" fill="#E6F2F8" xlink:href="#path-1"></use>
+            <g id="Group" transform="translate(53.000000, 95.000000)">
+                <use id="Rectangle" stroke="#979797" mask="url(#mask-4)" stroke-width="2" fill="#8BEC9F" xlink:href="#path-3"></use>
+                <text id="Subject:-O=Hewlett-P" font-family="Helvetica-Light, Helvetica" font-size="12" font-weight="300" letter-spacing="-0.799999952" fill="#182740">
+                    <tspan x="4.63599883" y="41">Subject: O=Hewlett-Packard Company, OU=Long Lived </tspan>
+                    <tspan x="14.8159989" y="55">CodeSigning Certificate, CN=Hewlett-Packard UEFI </tspan>
+                    <tspan x="75.9059994" y="69">Secure Boot Platform Key</tspan>
+                </text>
+                <text id="PK" font-family="Helvetica-Light, Helvetica" font-size="19" font-weight="300" letter-spacing="-1.26666665" fill="#182740">
+                    <tspan x="123.625667" y="20">PK</tspan>
+                </text>
+            </g>
+            <g id="Group" transform="translate(53.000000, 249.000000)">
+                <use id="Rectangle" stroke="#979797" mask="url(#mask-6)" stroke-width="2" fill="#8BEC9F" xlink:href="#path-5"></use>
+                <text id="Subject:-C=US,-ST=Wa" font-family="Helvetica-Light, Helvetica" font-size="12" font-weight="300" letter-spacing="-0.799999952" fill="#182740">
+                    <tspan x="26.637999" y="41">Subject: C=US, ST=Washington, L=Redmond, </tspan>
+                    <tspan x="2.46199874" y="55">O=Microsoft Corporation, CN=Microsoft Corporation KEK </tspan>
+                    <tspan x="114.454" y="69">CA 2011</tspan>
+                </text>
+                <text id="Subject:-O=Hewlett-P" font-family="Helvetica-Light, Helvetica" font-size="12" font-weight="300" letter-spacing="-0.799999952" fill="#182740">
+                    <tspan x="4.63599883" y="119">Subject: O=Hewlett-Packard Company, OU=Long Lived </tspan>
+                    <tspan x="14.8159989" y="133">CodeSigning Certificate, CN=Hewlett-Packard UEFI </tspan>
+                    <tspan x="60.5979993" y="147">Secure Boot Key Exchange Key</tspan>
+                </text>
+                <text id="KEK" font-family="Helvetica-Light, Helvetica" font-size="19" font-weight="300" letter-spacing="-1.26666665" fill="#182740">
+                    <tspan x="118.4225" y="20">KEK</tspan>
+                </text>
+            </g>
+            <g id="Group-Copy" transform="translate(52.000000, 502.000000)">
+                <use id="Rectangle" stroke="#979797" mask="url(#mask-8)" stroke-width="2" fill="#8BEC9F" xlink:href="#path-7"></use>
+                <use id="Rectangle-2" stroke="#979797" mask="url(#mask-10)" stroke-width="2" fill-opacity="0.6" fill="#ACA4A4" xlink:href="#path-9"></use>
+                <text id="DB/DBX" font-family="Helvetica-Light, Helvetica" font-size="19" font-weight="300" letter-spacing="-1.26666665" fill="#182740">
+                    <tspan x="103.9635" y="20">DB/DBX</tspan>
+                </text>
+                <text id="Canonical-Certificat" font-family="Helvetica-Light, Helvetica" font-size="12" font-weight="300" letter-spacing="-0.799999952" fill="#182740">
+                    <tspan x="86.8699995" y="60">Canonical Certificate</tspan>
+                </text>
+            </g>
+            <path d="M188,438.5 L188,495" id="Line" stroke="#5CC76D" stroke-width="4" stroke-linecap="square"></path>
+            <path id="Line-decoration-1" d="M188,495 L191,484.2 L185,484.2 L188,495 Z" stroke="#5CC76D" stroke-width="4" stroke-linecap="square"></path>
+            <text id="Chain-Of-Trust" font-family="Phosphate-Inline, Phosphate" font-size="32" font-weight="normal" letter-spacing="-0.117894702" fill="#182740">
+                <tspan x="232.465263" y="67">Chain Of Trust</tspan>
+            </text>
+            <path d="M187.5,195.5 L187.5,240.5" id="Line" stroke="#5BC76D" stroke-width="3" stroke-linecap="square" fill="#D8D8D8"></path>
+            <path id="Line-decoration-1" d="M187.5,240.5 L190.5,229.7 L184.5,229.7 L187.5,240.5 Z" stroke="#5BC76D" stroke-width="3" stroke-linecap="square" fill="#D8D8D8"></path>
+            <g id="Group-4" transform="translate(418.000000, 95.000000)">
+                <use id="Rectangle-5" stroke="#979797" mask="url(#mask-12)" stroke-width="2" fill="#D8D8D8" xlink:href="#path-11"></use>
+                <g id="Group-6" transform="translate(29.000000, 21.000000)">
+                    <g id="Group-5">
+                        <text id="Signing" font-family="Helvetica-Light, Helvetica" font-size="18" font-weight="300" letter-spacing="-1.19999981" fill="#182740">
+                            <tspan x="106.198999" y="18">Signing</tspan>
+                        </text>
+                        <path d="M0.5,11.5 L63.5,11.5" id="Line" stroke="#5BC76D" stroke-width="3" stroke-linecap="square" fill="#D8D8D8"></path>
+                        <path id="Line-decoration-1" d="M63.5,11.5 L52.7,8.5 L52.7,14.5 L63.5,11.5 Z" stroke="#5BC76D" stroke-width="3" stroke-linecap="square" fill="#D8D8D8"></path>
+                    </g>
+                    <g id="Group-5-Copy" transform="translate(0.000000, 36.000000)">
+                        <text id="Executing" font-family="Helvetica-Light, Helvetica" font-size="18" font-weight="300" letter-spacing="-1.19999981" fill="#182740">
+                            <tspan x="97.8859991" y="18">Executing</tspan>
+                        </text>
+                        <path d="M0.5,11.5 L63.5,11.5" id="Line" stroke="#2D5EDA" stroke-width="3" stroke-linecap="square" fill="#D8D8D8"></path>
+                        <path id="Line-decoration-1" d="M63.5,11.5 L52.7,8.5 L52.7,14.5 L63.5,11.5 Z" stroke="#2D5EDA" stroke-width="3" stroke-linecap="square" fill="#D8D8D8"></path>
+                    </g>
+                </g>
+            </g>
+            <g id="Group-2" transform="translate(417.000000, 502.000000)">
+                <use id="Rectangle-3" stroke="#979797" mask="url(#mask-14)" stroke-width="2" fill="#7055EE" xlink:href="#path-13"></use>
+                <text id="SHIM" font-family="Helvetica-Light, Helvetica" font-size="32" font-weight="300" letter-spacing="-2.13333321" fill="#182740">
+                    <tspan x="73.4673535" y="67">SHIM</tspan>
+                </text>
+            </g>
+            <g id="Group-2-Copy" transform="translate(418.000000, 682.000000)">
+                <use id="Rectangle-3" stroke="#979797" mask="url(#mask-16)" stroke-width="2" fill="#7055EE" xlink:href="#path-15"></use>
+                <text id="GRUB" font-family="Helvetica-Light, Helvetica" font-size="32" font-weight="300" letter-spacing="-2.13333321" fill="#182740">
+                    <tspan x="67.2273535" y="67">GRUB</tspan>
+                </text>
+            </g>
+            <path d="M324,560.5 L413,560.5" id="Line" stroke="#5CC76D" stroke-width="4" stroke-linecap="square"></path>
+            <path id="Line-decoration-1" d="M413,560.5 L402.2,557.5 L402.2,563.5 L413,560.5 Z" stroke="#5CC76D" stroke-width="4" stroke-linecap="square"></path>
+            <g id="Group-3" transform="translate(513.000000, 619.000000)" stroke-width="4" stroke-linecap="square">
+                <path d="M25,0 L25,58" id="Line" stroke="#5CC76D"></path>
+                <path id="Line-decoration-1" d="M25,58 L28,47.2 L22,47.2 L25,58 Z" stroke="#5CC76D"></path>
+                <path d="M2,2 L2,59" id="Line" stroke="#2C5EDB"></path>
+                <path id="Line-decoration-1" d="M2,59 L5,48.2 L-1,48.2 L2,59 Z" stroke="#2C5EDB"></path>
+            </g>
+        </g>
+    </g>
+</svg>
